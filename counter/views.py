@@ -867,10 +867,13 @@ class CounterStatView(DetailView, CanEditMixin):
         kwargs = super(CounterStatView, self).get_context_data(**kwargs)
         kwargs['Customer'] = Customer
         semester_start = Subscription.compute_start(d=date.today(), duration=3)
-        kwargs['total_sellings'] = Selling.objects.filter(date__gte=semester_start,
-                counter=self.object).aggregate(total_sellings=Sum(F('quantity')*F('unit_price'),
+        kwargs['total_sellings_semester'] = Selling.objects.filter(date__gte=semester_start,
+                counter=self.object).aggregate(total_sellings_semester=Sum(F('quantity')*F('unit_price'),
+                    output_field=CurrencyField()))['total_sellings_semester']
+        kwargs['total_sellings'] = Selling.objects.filter(counter=self.object).aggregate(
+                    total_sellings=Sum(F('quantity')*F('unit_price'),
                     output_field=CurrencyField()))['total_sellings']
-        kwargs['top'] = Selling.objects.values('customer__user').annotate(
+        kwargs['top_semester'] = Selling.objects.values('customer__user').annotate(
                 selling_sum=Sum(
                     Case(When(counter=self.object,
                             date__gte=semester_start,
@@ -880,6 +883,18 @@ class CounterStatView(DetailView, CanEditMixin):
                         )
                     )
                 ).exclude(selling_sum=None).order_by('-selling_sum').all()[:100]
+        kwargs['top'] = Selling.objects.values('customer__user').annotate(
+                selling_sum=Sum(
+                    Case(When(counter=self.object,
+                            unit_price__gt=0,
+                        then=F('unit_price')*F('quantity')),
+                        output_field=CurrencyField()
+                        )
+                    )
+                ).exclude(selling_sum=None).order_by('-selling_sum').all()[:100]
+
+        kwargs['sith_date']=settings.SITH_START_DATE[0]
+        kwargs['semester_start']=semester_start
         return kwargs
 
     def dispatch(self, request, *args, **kwargs):
