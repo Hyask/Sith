@@ -26,6 +26,7 @@
             <tr>
                 <td>{% trans %}Product{% endtrans %}</td>
                 <td>{% trans %}Quantity{% endtrans %}</td>
+                <td>{% trans %}Percentage{% endtrans %}</td>
             </tr>
         </thead>
         <tbody>
@@ -33,6 +34,7 @@
             <tr>
                 <td>{{ p['product__name'] }}</td>
                 <td>{{ p['product_sum'] }}</td>
+                <td>{{ '%.2f'|format(100 * p['product_sum'] / nb_total_product) }}</td>
             </tr>
         {% endfor %}
         </tbody>
