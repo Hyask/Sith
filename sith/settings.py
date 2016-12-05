@@ -445,6 +445,11 @@ SITH_LAST_OPERATIONS_LIMIT=5
 # Minutes for a counter to be inactive
 SITH_COUNTER_MINUTE_INACTIVE=10
 
+# Counter sellings statistics 
+SITH_MINIMUM_SUPPORT=0.5
+SITH_MINIMUM_CONFIANCE=0.85
+#SITH_MINIMUM_ATM_METRIC=[0,1]
+
 # ET variables
 SITH_EBOUTIC_ET_URL = "https://preprod-tpeweb.e-transactions.fr/cgi/MYchoix_pagepaiement.cgi"
 SITH_EBOUTIC_PBX_SITE = "4000666"
