@@ -397,7 +397,8 @@ class CounterClick(CounterTabsMixin, DetailView):
         kwargs['refill_form'] = self.refill_form or RefillForm()
         kwargs['categories'] = ProductType.objects.all()
 
-        kwargs['rules']= APriori_algorithm.calculate_rules_main(os.path.join(settings.BASE_DIR)+'/counter/stats_data/data_test.dat')
+        (kwargs['itemset_list'], kwargs['rules'], kwargs['transactions'])= APriori_algorithm.calculate_rules_main(
+            os.path.join(settings.BASE_DIR)+'/counter/stats_data/data.dat')
         return kwargs
 
 class CounterLogin(RedirectView):
@@ -1141,7 +1142,8 @@ class APriori_algorithm():
             exit()
         transactions = []
         for line in content:
-            transactions.append(frozenset(line.strip().split()))
+            transactions.append(line.strip().split())
+            #transactions.append(frozenset(line.strip().split()))
         return transactions
 
 
@@ -1153,27 +1155,18 @@ class APriori_algorithm():
         for idx, itemsets in enumerate(itemsets_list):
             if len(itemsets) == 0:
                 continue
-            print('Itemsets of size', idx + 1)
             formatted_itemsets = []
             for itemset, freq in itemsets.items():
                 support = float(freq) / len(transactions)
                 formatted_itemsets.append((','.join(sorted(map(str, itemset))), round(support, 3)))
             sorted_itemsets = sorted(formatted_itemsets, key=lambda tup: (-tup[1], tup[0]))
-            for itemset, support in sorted_itemsets:
-                print(itemset, '{0:.3f}'.format(support))
 
-            print()
-
-        print('RULES')
         formatted_rules = [(','.join(sorted(map(str, rule[0]))) + ' -> ' + 
             ','.join(sorted(map(str, rule[1]))), round(acc, 3)) for rule, acc in rules]
         sorted_rules = sorted(formatted_rules, key=lambda tup: (-tup[1], tup[0]))
         
         return sorted_rules
-        #for rule, acc in sorted_rules:
-        #    print(rule, '{0:.3f}'.format(acc))
-
-
+       
     def remove_itemsets_without_min_support(itemsets, min_sup, transactions, min_atm):
         '''remove the itemsets that don't have the minimum support and, if given,
         the minimum value for atm
@@ -1362,8 +1355,6 @@ class APriori_algorithm():
 
     def calculate_rules_main(file_name):
 
-        print(file_name)
-
         if hasattr(settings, 'SITH_MINIMUM_ATM_METRIC'):
             min_atm = settings.SITH_MINIMUM_ATM_METRIC
         else:
@@ -1386,7 +1377,28 @@ class APriori_algorithm():
         for itemsets in list(reversed(itemsets_list))[:-1]:
             rules += APriori_algorithm.generate_rules(itemsets, settings.SITH_MINIMUM_CONFIANCE, itemsets_list)
 
-        return APriori_algorithm.get_formated_results(itemsets_list, rules, transactions)
-        #return (itemsets_list, rules, transactions)
+        rules_list= list()
+        for rule in rules:
+            key_set = set()
+            value_set = set()
+            intermediaire_list = list()
+            for r0 in rule[0][0]:
+                iterator = iter(r0)
+                key=''
+                for next_k in iterator:
+                    key += next_k
+                key_set.add(key)
+            for r1 in rule[0][1]:
+                iterator = iter(r1)
+                value=''
+                for next_v in iterator:
+                    value += next_v
+                value_set.add(value)
+            intermediaire_list.append(key_set)
+            intermediaire_list.append(value_set)
+            rules_list.append(intermediaire_list)
+
+        #return APriori_algorithm.get_formated_results(itemsets_list, rules, transactions)
+        return (itemsets_list, rules_list, transactions)
                 
 
