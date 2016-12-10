@@ -25,12 +25,30 @@
 {% block content %}
 <h4>{{ counter }}</h4>
 
-<h5>Rules generation with file stats_data/data_test.dat</h5>
-{% for rule, acc in rules %}
-    {{ rule }} : {{ "%0.3f"|format(acc) }}
-    <br>
-{% endfor %}
-
+<div id="cat_{{ t|slugify }}">
+    <h5>Suggestions</h5>
+    {% set suggestion_list = [] %}
+    {% for rule in rules %}
+        {% if rule[0].issubset(request.session['basket'].keys()) %}
+            {% for v in rule[1] %}
+                {% if v not in suggestion_list %}
+                    {% set suggestion_list = suggestion_list.append(v) %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+    {% for v in suggestion_list %}
+        {% set file = None %}
+        {% set p = counter.products.filter(id=v).first() %} 
+        {% if p.icon %}
+            {% set file = p.icon.url %}
+        {% else %}
+            {% set file = static('core/img/na.gif') %}
+        {% endif %}
+        {% set prod = '<strong>%s</strong><hr><img src="%s" /><span>%s €<br>%s</span>' % (p.name, file, p.selling_price, p.code) %}
+            {{ add_product(p.id, prod, "form_button") }}
+    {% endfor %}
+</div>
 
 <div id="user_info">
     <h5>{% trans %}Customer{% endtrans %}</h5>
