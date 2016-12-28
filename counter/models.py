@@ -15,9 +15,8 @@ import datetime
 
 from club.models import Club
 from accounting.models import CurrencyField
-from core.models import Group, User
-from subscription.models import Subscriber, Subscription
-from subscription.views import get_subscriber
+from core.models import Group, User, Notification
+from subscription.models import Subscription
 
 class Customer(models.Model):
     """
@@ -79,7 +78,7 @@ class ProductType(models.Model):
         """
         Method to see if that object can be edited by the given user
         """
-        if user.is_in_group(settings.SITH_GROUPS['accounting-admin']['name']):
+        if user.is_in_group(settings.SITH_GROUP_ACCOUNTING_ADMIN_ID):
             return True
         return False
 
@@ -117,7 +116,7 @@ class Product(models.Model):
         """
         Method to see if that object can be edited by the given user
         """
-        if user.is_in_group(settings.SITH_GROUPS['accounting-admin']['name']) or user.is_in_group(settings.SITH_GROUPS['counter-admin']['name']):
+        if user.is_in_group(settings.SITH_GROUP_ACCOUNTING_ADMIN_ID) or user.is_in_group(settings.SITH_GROUP_COUNTER_ADMIN_ID):
             return True
         return False
 
@@ -134,7 +133,7 @@ class Counter(models.Model):
     type = models.CharField(_('counter type'),
             max_length=255,
             choices=[('BAR',_('Bar')), ('OFFICE',_('Office')), ('EBOUTIC',_('Eboutic'))])
-    sellers = models.ManyToManyField(Subscriber, verbose_name=_('sellers'), related_name='counters', blank=True)
+    sellers = models.ManyToManyField(User, verbose_name=_('sellers'), related_name='counters', blank=True)
     edit_groups = models.ManyToManyField(Group, related_name="editable_counters", blank=True)
     view_groups = models.ManyToManyField(Group, related_name="viewable_counters", blank=True)
     token = models.CharField(_('token'), max_length=30, null=True, blank=True)
@@ -159,12 +158,12 @@ class Counter(models.Model):
         mem = self.club.get_membership_for(user)
         if mem and mem.role >= 7:
             return True
-        return user.is_in_group(settings.SITH_GROUPS['counter-admin']['name'])
+        return user.is_in_group(settings.SITH_GROUP_COUNTER_ADMIN_ID)
 
     def can_be_viewed_by(self, user):
         if self.type == "BAR" or self.type == "EBOUTIC":
             return True
-        sub = get_subscriber(request.user)
+        sub = request.user
         return user.is_in_group(settings.SITH_MAIN_BOARD_GROUP) or sub in self.sellers
 
     def gen_token(self):
@@ -270,6 +269,11 @@ class Refilling(models.Model):
             self.customer.amount += self.amount
             self.customer.save()
             self.is_validated = True
+        Notification(user=self.customer.user, url=reverse('core:user_account_detail',
+                    kwargs={'user_id': self.customer.user.id, 'year': self.date.year, 'month': self.date.month}),
+                param=str(self.amount),
+                type="REFILLING",
+                ).save()
         super(Refilling, self).save(*args, **kwargs)
 
 class Selling(models.Model):
@@ -344,7 +348,7 @@ class Selling(models.Model):
             self.customer.save()
             self.is_validated = True
         if self.product and self.product.id == settings.SITH_PRODUCT_SUBSCRIPTION_ONE_SEMESTER:
-            s = Subscriber.objects.filter(id=self.customer.user.id).first()
+            s = User.objects.filter(id=self.customer.user.id).first()
             sub = Subscription(
                     member=s,
                     subscription_type='un-semestre',
@@ -359,7 +363,7 @@ class Selling(models.Model):
                     start=sub.subscription_start)
             sub.save()
         elif self.product and self.product.id == settings.SITH_PRODUCT_SUBSCRIPTION_TWO_SEMESTERS:
-            s = Subscriber.objects.filter(id=self.customer.user.id).first()
+            s = User.objects.filter(id=self.customer.user.id).first()
             sub = Subscription(
                     member=s,
                     subscription_type='deux-semestres',
@@ -377,6 +381,13 @@ class Selling(models.Model):
             if self.product.eticket:
                 self.send_mail_customer()
         except: pass
+        Notification(
+                user=self.customer.user,
+                url=reverse('core:user_account_detail',
+                    kwargs={'user_id': self.customer.user.id, 'year': self.date.year, 'month': self.date.month}),
+                param="%d x %s" % (self.quantity, self.label),
+                type="SELLING",
+                ).save()
         super(Selling, self).save(*args, **kwargs)
 
 class Permanency(models.Model):
@@ -452,7 +463,7 @@ class CashRegisterSummary(models.Model):
         """
         Method to see if that object can be edited by the given user
         """
-        if user.is_in_group(settings.SITH_GROUPS['counter-admin']['name']):
+        if user.is_in_group(settings.SITH_GROUP_COUNTER_ADMIN_ID):
             return True
         return False
 
@@ -504,7 +515,7 @@ class Eticket(models.Model):
         """
         Method to see if that object can be edited by the given user
         """
-        return user.is_in_group(settings.SITH_GROUPS['counter-admin']['name'])
+        return user.is_in_group(settings.SITH_GROUP_COUNTER_ADMIN_ID)
 
     def get_hash(self, string):
         import hashlib, hmac

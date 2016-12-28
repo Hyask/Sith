@@ -16,7 +16,7 @@ from django import forms
 
 import os
 
-from core.models import SithFile
+from core.models import SithFile, RealGroup, Notification
 from core.views import CanViewMixin, CanEditMixin, CanEditPropMixin, CanCreateMixin, can_view, not_found
 
 def send_file(request, file_id, file_class=SithFile, file_attr="file"):
@@ -49,22 +49,29 @@ class AddFilesForm(forms.Form):
             required=False)
 
     def process(self, parent, owner, files):
+        notif = False
         try:
             if self.cleaned_data['folder_name'] != "":
                 folder = SithFile(parent=parent, name=self.cleaned_data['folder_name'], owner=owner)
                 folder.clean()
                 folder.save()
+                notif = True
         except Exception as e:
             self.add_error(None, _("Error creating folder %(folder_name)s: %(msg)s") %
-                    {'folder_name': self.cleaned_data['folder_name'], 'msg': str(e.message)})
+                    {'folder_name': self.cleaned_data['folder_name'], 'msg': repr(e)})
         for f in files:
             new_file = SithFile(parent=parent, name=f.name, file=f, owner=owner, is_folder=False,
                     mime_type=f.content_type, size=f._size)
             try:
                 new_file.clean()
                 new_file.save()
+                notif = True
             except Exception as e:
                 self.add_error(None, _("Error uploading file %(file_name)s: %(msg)s") % {'file_name': f, 'msg': repr(e)})
+        if notif:
+            for u in RealGroup.objects.filter(id=settings.SITH_GROUP_COM_ADMIN_ID).first().users.all():
+                if not u.notifications.filter(type="FILE_MODERATION", viewed=False).exists():
+                    Notification(user=u, url=reverse("core:file_moderation"), type="FILE_MODERATION").save()
 
 class FileListView(ListView):
     template_name = 'core/file_list.jinja'
@@ -134,13 +141,41 @@ class FileView(CanViewMixin, DetailView, FormMixin):
     context_object_name = "file"
     form_class = AddFilesForm
 
+    def handle_clipboard(request, object):
+        if 'delete' in request.POST.keys():
+            for f_id in request.POST.getlist('file_list'):
+                sf = SithFile.objects.filter(id=f_id).first()
+                if sf:
+                    sf.delete()
+        if 'clear' in request.POST.keys():
+            request.session['clipboard'] = []
+        if 'cut' in request.POST.keys():
+            for f_id in request.POST.getlist('file_list'):
+                f_id = int(f_id)
+                if f_id in [c.id for c in object.children.all()] and f_id not in request.session['clipboard']:
+                    print(f_id)
+                    request.session['clipboard'].append(f_id)
+        if 'paste' in request.POST.keys():
+            for f_id in request.session['clipboard']:
+                sf = SithFile.objects.filter(id=f_id).first()
+                if sf:
+                    sf.move_to(object)
+            request.session['clipboard'] = []
+        request.session.modified = True
+
     def get(self, request, *args, **kwargs):
         self.form = self.get_form()
+        if 'clipboard' not in request.session.keys():
+            request.session['clipboard'] = []
         return super(FileView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        self.form = self.get_form()
+        if 'clipboard' not in request.session.keys():
+            request.session['clipboard'] = []
+        if request.user.can_edit(self.object):
+            FileView.handle_clipboard(request, self.object)
+        self.form = self.get_form() # The form handle only the file upload
         files = request.FILES.getlist('file_field')
         if request.user.is_authenticated() and request.user.can_edit(self.object) and self.form.is_valid():
             self.form.process(parent=self.object, owner=request.user, files=files)
@@ -157,6 +192,7 @@ class FileView(CanViewMixin, DetailView, FormMixin):
         kwargs['form'] = self.form
         if self.kwargs['popup']:
             kwargs['popup'] = 'popup'
+        kwargs['clipboard'] = SithFile.objects.filter(id__in=self.request.session['clipboard'])
         return kwargs
 
 class FileDeleteView(CanEditPropMixin, DeleteView):
@@ -185,7 +221,7 @@ class FileModerationView(TemplateView):
 
     def get_context_data(self, **kwargs):
         kwargs = super(FileModerationView, self).get_context_data(**kwargs)
-        kwargs['files'] = SithFile.objects.filter(is_moderated=False).all()
+        kwargs['files'] = SithFile.objects.filter(is_moderated=False)[:100]
         return kwargs
 
 class FileModerateView(CanEditPropMixin, SingleObjectMixin):
@@ -195,6 +231,7 @@ class FileModerateView(CanEditPropMixin, SingleObjectMixin):
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         self.object.is_moderated = True
+        self.object.moderator = request.user
         self.object.save()
         if 'next' in self.request.GET.keys():
             return redirect(self.request.GET['next'])

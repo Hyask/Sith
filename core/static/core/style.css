@@ -63,6 +63,17 @@ header form {
     width: 3em;
     height: 2em;
 }
+#notif {
+    display: none;
+    position: absolute;
+    background: lightgrey;
+    text-align: center;
+    overflow: scroll;
+    max-height: 400px;
+}
+#notif li:hover {
+    background: #bcc;
+}
 
 /*---------------------------------NAV---------------------------------*/
 nav {
@@ -282,6 +293,26 @@ tbody>tr:hover {
     margin: 2px auto;
     display: block;
 }
+#notifications li {
+    padding: 5px;
+    margin: 2px;
+    list-style: none;
+}
+#moderation div {
+    margin: 2px;
+    padding: 2px;
+    border: solid 1px red;
+    text-align: center
+}
+#moderation img {
+    width: 500px;
+}
+#pict {
+    display: inline-block;
+    width: 80%;
+    background: #333;
+    border: solid #333 2px;
+}
 /*---------------------------------PAGE--------------------------------*/
 .page_content {
     display: block;
@@ -343,6 +374,10 @@ textarea {
     max-height: 100px;
     display: block;
     margin: auto;
+}
+.not_moderated {
+    border: solid 1px red;
+    box-shadow: red 2px 2px 10px;
 }
 
 /*--------------------------------FOOTER-------------------------------*/

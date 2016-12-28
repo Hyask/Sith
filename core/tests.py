@@ -3,14 +3,12 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import Group
 from django.core.management import call_command
 
-from core.models import User, Group
+from core.models import User, Group, Page
 
 """
 to run these tests :
     python3 manage.py test
 """
-
-
 
 class UserRegistrationTest(TestCase):
     def setUp(self):
@@ -212,27 +210,20 @@ class PageHandlingTest(TestCase):
         """
         Should display a page correctly
         """
-        self.client.post(reverse('core:page_prop', kwargs={'page_name': 'guy'}), {
-            'parent': '',
-            'name': 'guy',
-            'title': 'Guy',
-            'Content': 'Guyéuyuyé',
-            })
-        self.client.post(reverse('core:page_prop', kwargs={'page_name': 'guy/bibou'}), {
-            'parent': '1',
-            'name': 'bibou',
-            'title': 'Bibou',
-            'Content':
-            'Bibibibiblblblblblbouuuuuuuuu',
-            })
+        parent = Page(name="guy", owner_group=Group.objects.filter(id=1).first())
+        parent.save(force_lock=True)
+        page = Page(name="bibou", owner_group=Group.objects.filter(id=1).first(), parent=parent)
+        page.save(force_lock=True)
         response = self.client.get(reverse('core:page', kwargs={'page_name': 'guy/bibou'}))
         self.assertTrue(response.status_code == 200)
+        self.assertTrue('<a href="/page/guy/bibou/edit">\\xc3\\x89diter</a>' in str(response.content))
 
     def test_access_page_not_found(self):
         """
         Should not display a page correctly
         """
         response = self.client.get(reverse('core:page', kwargs={'page_name': 'swagg'}))
+        response = self.client.get("/page/swagg/")
         self.assertTrue(response.status_code == 200)
         self.assertTrue('<a href="/page/create?page=swagg">' in str(response.content))
 
@@ -269,3 +260,30 @@ http://git.an
 #   - renaming a page
 #   - changing a page's parent --> check that page's children's full_name
 #   - changing the different groups of the page
+
+class FileHandlingTest(TestCase):
+    def setUp(self):
+        try:
+            call_command("populate")
+            self.subscriber = User.objects.filter(username="subscriber").first()
+            self.client.login(username='subscriber', password='plop')
+        except Exception as e:
+            print(e)
+
+    def test_create_folder_home(self):
+        response = self.client.post(reverse("core:file_detail", kwargs={"file_id":self.subscriber.home.id}),
+                {"folder_name": "GUY_folder_test"})
+        self.assertTrue(response.status_code == 302)
+        response = self.client.get(reverse("core:file_detail", kwargs={"file_id":self.subscriber.home.id}))
+        self.assertTrue(response.status_code == 200)
+        self.assertTrue("GUY_folder_test</a>" in str(response.content))
+
+    def test_upload_file_home(self):
+        with open("/bin/ls", "rb") as f:
+            response = self.client.post(reverse("core:file_detail", kwargs={"file_id":self.subscriber.home.id}),
+                    {"file_field": f})
+        self.assertTrue(response.status_code == 302)
+        response = self.client.get(reverse("core:file_detail", kwargs={"file_id":self.subscriber.home.id}))
+        self.assertTrue(response.status_code == 200)
+        self.assertTrue("ls</a>" in str(response.content))
+

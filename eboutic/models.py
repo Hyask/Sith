@@ -5,7 +5,7 @@ from django.conf import settings
 from accounting.models import CurrencyField
 from counter.models import Counter, Product, Customer, Selling, Refilling
 from core.models import User
-from subscription.models import Subscription, Subscriber
+from subscription.models import Subscription
 
 class Basket(models.Model):
     """
@@ -38,7 +38,7 @@ class Basket(models.Model):
         return total
 
     def __str__(self):
-        return "Basket (%d items)" % self.items.all().count()
+        return "%s's basket (%d items)" % (self.user, self.items.all().count())
 
 class Invoice(models.Model):
     """

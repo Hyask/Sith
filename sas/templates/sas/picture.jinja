@@ -62,7 +62,7 @@
             {% for r in picture.people.all() %}
             <li>
                 <a href="{{ r.user.get_absolute_url() }}">{{ r.user.get_short_name() }}</a>
-                {% if user == r.user or user.is_in_group(settings.SITH_SAS_ADMIN_GROUP_ID) %}
+                {% if user == r.user or user.can_edit(picture) %}
                 <a href="?remove_user={{ r.user.id }}">{% trans %}Delete{% endtrans %}</a>
                 {% endif %}
             </li>
@@ -77,6 +77,8 @@
     <div>
         <h5>{% trans %}Infos{% endtrans %}</h5>
         <p>{% trans %}Date: {% endtrans %}{{ picture.date|date(DATETIME_FORMAT) }}</p>
+        <p>{% trans %}Owner: {% endtrans %}<a href="{{ picture.owner.get_absolute_url() }}">{{ picture.owner.get_short_name() }}</a></p>
+        <p>{% trans %}Moderator: {% endtrans %}<a href="{{ picture.moderator.get_absolute_url() }}">{{ picture.moderator.get_short_name() }}</a></p>
         <p>{{ picture.parent.children.filter(id__lte=picture.id).count() }} / {{ picture.parent.children.count() }}</p>
     </div>
     <div>
@@ -92,7 +94,23 @@
         </p>
     </div>
 </div>
-<div style="display: inline-block; width: 80%; background: #333; border: solid #333 2px;" id="pict">
+{% if picture.is_moderated %}
+<div id="pict">
+{% else %}
+<div id="pict" style="border: solid #f00 2px; box-shadow: red 0px 0px 5px">
+{% set next = picture.get_next() %}
+{% if not next %}
+    {% set next = url('sas:moderation') %}
+{% else %}
+    {% set next = next.get_absolute_url() + "#pict" %}
+{% endif %}
+<div style="background: lightgrey; padding: 2px;">
+    <a href="{{ url('core:file_moderate', file_id=picture.id) }}?next={{ next }}">
+        {% trans %}Moderate{% endtrans %}</a> |
+    <a href="{{ url('core:file_delete', file_id=picture.id) }}?next={{ next }}">
+        {% trans %}Delete{% endtrans %}</a>
+</div>
+{% endif %}
     {% if picture.is_vertical %}
     <img src="{{ picture.get_download_compressed_url() }}" alt="{{ picture.get_display_name() }}" style="width: 60%; display: block; margin: auto"/>
     {% else %}

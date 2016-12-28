@@ -182,26 +182,30 @@ class User(AbstractBaseUser):
     def to_dict(self):
         return self.__dict__
 
+    def was_subscribed(self):
+        return self.subscriptions.exists()
+
+    def is_subscribed(self):
+        s = self.subscriptions.last()
+        return s.is_valid_now() if s is not None else False
+
     def is_in_group(self, group_name):
         """If the user is in the group passed in argument (as string or by id)"""
+        group_id = 0
+        g = None
         if isinstance(group_name, int): # Handle the case where group_name is an ID
             g = Group.objects.filter(id=group_name).first()
-            if g:
-                group_name = g.name
-            else:
-                return False
-        if group_name == settings.SITH_GROUPS['public']['name']:
+        else:
+            g = Group.objects.filter(name=group_name).first()
+        if g:
+            group_name = g.name
+            group_id = g.id
+        else:
+            return False
+        if group_id == settings.SITH_GROUP_PUBLIC_ID:
             return True
         if group_name == settings.SITH_MAIN_MEMBERS_GROUP: # We check the subscription if asked
-            if 'subscription' in settings.INSTALLED_APPS:
-                from subscription.models import Subscriber
-                s = Subscriber.objects.filter(pk=self.pk).first()
-                if s is not None and s.is_subscribed():
-                    return True
-                else:
-                    return False
-            else:
-                return False
+            return self.is_subscribed()
         if group_name[-len(settings.SITH_BOARD_SUFFIX):] == settings.SITH_BOARD_SUFFIX:
             from club.models import Club
             name = group_name[:-len(settings.SITH_BOARD_SUFFIX)]
@@ -218,13 +222,13 @@ class User(AbstractBaseUser):
             if mem:
                 return True
             return False
-        if group_name == settings.SITH_GROUPS['root']['name'] and self.is_superuser:
+        if group_id == settings.SITH_GROUP_ROOT_ID and self.is_superuser:
             return True
         return self.groups.filter(name=group_name).exists()
 
     @property
     def is_root(self):
-        return self.is_superuser or self.groups.filter(name=settings.SITH_GROUPS['root']['name']).exists()
+        return self.is_superuser or self.groups.filter(id=settings.SITH_GROUP_ROOT_ID).exists()
 
     @property
     def is_board_member(self):
@@ -238,11 +242,11 @@ class User(AbstractBaseUser):
 
     @property
     def is_banned_alcohol(self):
-        return self.is_in_group(settings.SITH_GROUPS['banned-alcohol']['name'])
+        return self.is_in_group(settings.SITH_GROUP_BANNED_ALCOHOL_ID)
 
     @property
     def is_banned_counter(self):
-        return self.is_in_group(settings.SITH_GROUPS['banned-from-counters']['name'])
+        return self.is_in_group(settings.SITH_GROUP_BANNED_COUNTER_ID)
 
     def save(self, *args, **kwargs):
         create = False
@@ -360,7 +364,7 @@ class User(AbstractBaseUser):
             return True
         if hasattr(obj, "owner_group") and self.is_in_group(obj.owner_group.name):
             return True
-        if self.is_superuser or self.is_in_group(settings.SITH_GROUPS['root']['name']):
+        if self.is_superuser or self.is_in_group(settings.SITH_GROUP_ROOT_ID):
             return True
         return False
 
@@ -422,6 +426,9 @@ class AnonymousUser(AuthAnonymousUser):
     def __init__(self, request):
         super(AnonymousUser, self).__init__()
 
+    def was_subscribed(self):
+        return False
+
     @property
     def subscribed(self):
         return False
@@ -450,7 +457,15 @@ class AnonymousUser(AuthAnonymousUser):
         """
         The anonymous user is only the public group
         """
-        if group_name == settings.SITH_GROUPS['public']['name']:
+        group_id = 0
+        if isinstance(group_name, int): # Handle the case where group_name is an ID
+            g = Group.objects.filter(id=group_name).first()
+            if g:
+                group_name = g.name
+                group_id = g.id
+            else:
+                return False
+        if group_id == settings.SITH_GROUP_PUBLIC_ID:
             return True
         return False
 
@@ -461,7 +476,7 @@ class AnonymousUser(AuthAnonymousUser):
         return False
 
     def can_view(self, obj):
-        if hasattr(obj, 'view_groups') and obj.view_groups.filter(pk=settings.SITH_GROUPS['public']['id']).exists():
+        if hasattr(obj, 'view_groups') and obj.view_groups.filter(id=settings.SITH_GROUP_PUBLIC_ID).exists():
             return True
         if hasattr(obj, 'can_be_viewed_by') and obj.can_be_viewed_by(self):
             return True
@@ -501,8 +516,9 @@ class SithFile(models.Model):
     size = models.IntegerField(_("size"), default=0)
     date = models.DateTimeField(_('date'), default=timezone.now)
     is_moderated = models.BooleanField(_("is moderated"), default=False)
+    moderator = models.ForeignKey(User, related_name="moderated_files", verbose_name=_("owner"), null=True, blank=True)
     asked_for_removal = models.BooleanField(_("asked for removal"), default=False)
-    is_in_sas = models.BooleanField(_("is in the SAS"), default=False)
+    is_in_sas = models.BooleanField(_("is in the SAS"), default=False) # Allows to query this flag, updated at each call to save()
 
     class Meta:
         verbose_name = _("file")
@@ -510,7 +526,9 @@ class SithFile(models.Model):
     def is_owned_by(self, user):
         if hasattr(self, 'profile_of') and user.is_in_group(settings.SITH_MAIN_BOARD_GROUP):
             return True
-        if user.is_in_group(settings.SITH_GROUPS['communication-admin']['id']):
+        if user.is_in_group(settings.SITH_GROUP_COM_ADMIN_ID):
+            return True
+        if self.is_in_sas and user.is_in_group(settings.SITH_GROUP_SAS_ADMIN_ID):
             return True
         return user.id == self.owner.id
 
@@ -588,6 +606,27 @@ class SithFile(models.Model):
             self.view_groups = self.parent.view_groups.all()
             self.save()
 
+    def move_to(self, parent):
+        """Move a file to somewhere else"""
+        if not parent.is_folder:
+            return
+        import shutil
+        import os
+        with transaction.atomic():
+            if self.is_folder:
+                old_file_name = self.get_full_path()
+            else:
+                old_file_name = self.file.name
+            self.parent = parent
+            self.save()
+            if self.is_folder:
+                for c in self.children.all():
+                    c.move_to(self)
+                shutil.rmtree(settings.MEDIA_ROOT + old_file_name)
+            else:
+                self.file.save(name=self.name, content=self.file)
+                os.remove(settings.MEDIA_ROOT + old_file_name)
+
     def __getattribute__(self, attr):
         if attr == "is_file":
             return not self.is_folder
@@ -598,6 +637,11 @@ class SithFile(models.Model):
     def as_picture(self):
         from sas.models import Picture
         return Picture.objects.filter(id=self.id).first()
+
+    @property
+    def as_album(self):
+        from sas.models import Album
+        return Album.objects.filter(id=self.id).first()
 
     def __str__(self):
         if self.is_folder:
@@ -615,6 +659,9 @@ class SithFile(models.Model):
 
     def get_parent_path(self):
         return '/' + '/'.join([p.name for p in self.get_parent_list()[::-1]])
+
+    def get_full_path(self):
+        return self.get_parent_path() + '/' + self.name
 
     def get_display_name(self):
         return self.name
@@ -654,7 +701,7 @@ class Page(models.Model):
     # playing with a Page object, use get_full_name() instead!
     _full_name = models.CharField(_('page name'), max_length=255, blank=True)
     owner_group = models.ForeignKey(Group, related_name="owned_page", verbose_name=_("owner group"),
-                                    default=settings.SITH_GROUPS['root']['id'])
+                                    default=settings.SITH_GROUP_ROOT_ID)
     edit_groups = models.ManyToManyField(Group, related_name="editable_page", verbose_name=_("edit group"), blank=True)
     view_groups = models.ManyToManyField(Group, related_name="viewable_page", verbose_name=_("view group"), blank=True)
     lock_user = models.ForeignKey(User, related_name="locked_pages", verbose_name=_("lock user"), blank=True, null=True, default=None)
@@ -712,6 +759,8 @@ class Page(models.Model):
         if not locked:
             raise NotLocked("The page is not locked and thus can not be saved")
         self.full_clean()
+        if not self.id:
+            super(Page, self).save(*args, **kwargs) # Save a first time to correctly set _full_name
         # This reset the _full_name just before saving to maintain a coherent field quicker for queries than the
         # recursive method
         # It also update all the children to maintain correct names
@@ -836,4 +885,17 @@ class PageRev(models.Model):
         super(PageRev, self).save(*args, **kwargs)
         # Don't forget to unlock, otherwise, people will have to wait for the page's timeout
         self.page.unset_lock()
+
+class Notification(models.Model):
+    user = models.ForeignKey(User, related_name='notifications')
+    url = models.CharField(_("url"), max_length=255)
+    param = models.CharField(_("param"), max_length=128, default="")
+    type = models.CharField(_("type"), max_length=32, choices=settings.SITH_NOTIFICATIONS, default="GENERIC")
+    date = models.DateTimeField(_('date'), default=timezone.now)
+    viewed = models.BooleanField(_('viewed'), default=False)
+
+    def __str__(self):
+        if self.param:
+            return self.get_type_display() % self.param
+        return self.get_type_display()
 

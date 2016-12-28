@@ -19,17 +19,36 @@
     <p><input type="submit" value="{% trans %}Add{% endtrans %}"></p>
 </form>
 {% endif %}
-<ul>
-    {% for f in file.children.order_by('-is_folder', 'name').all() %}
-    <li>
-        {% if f.is_folder %}
-        &#x1f4c1;
-        {% else %}
-        &#128462;
-        {% endif %}
-        <a href="{{ url('core:file_detail', file_id=f.id, popup=popup) }}">{{ f.get_display_name() }}</a></li>
-    {% endfor %}
-</ul>
+<form action="" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <p>
+        <input name="delete" type="submit" value="{% trans %}Delete{% endtrans %}"> |
+        <input name="clear" type="submit" value="{% trans %}Clear clipboard{% endtrans %}"> |
+        <input name="cut" type="submit" value="{% trans %}Cut{% endtrans %}"> |
+        <input name="paste" type="submit" value="{% trans %}Paste{% endtrans %}">
+    </p>
+    {% if clipboard %}
+    <p>{% trans %}Clipboard: {% endtrans %}
+        <ul>
+        {% for f in clipboard %}
+            <li>{{ f.get_full_path() }}</li>
+        {% endfor %}
+        </ul>
+    </p>
+    {% endif %}
+    <ul>
+        {% for f in file.children.order_by('-is_folder', 'name').all() %}
+        <li>
+            <input type="checkbox" name="file_list" value="{{ f.id }}">
+            {% if f.is_folder %}
+            &#x1f4c1;
+            {% else %}
+            &#128462;
+            {% endif %}
+            <a href="{{ url('core:file_detail', file_id=f.id, popup=popup) }}">{{ f.get_display_name() }}</a></li>
+        {% endfor %}
+    </ul>
+</form>
 {% else %}
 <p>{% trans %}Real name: {% endtrans %}{{ file.file.name.split('/')[-1] }}</p>
 <p>{% trans %}Date: {% endtrans %}{{ file.date|localtime|date(DATETIME_FORMAT) }} -
@@ -42,7 +61,7 @@
 {% if not file.home_of and not file.home_of_club and file.parent %}
 <p><a href="{{ url('core:file_delete', file_id=file.id, popup=popup) }}">{% trans %}Delete{% endtrans %}</a></p>
 {% endif %}
-{% if user.is_in_group(settings.SITH_GROUPS['communication-admin']['id']) %}
+{% if user.is_in_group(settings.SITH_GROUP_COM_ADMIN_ID) %}
 <p><a href="{{ url('core:file_moderate', file_id=file.id) }}">{% trans %}Moderate{% endtrans %}</a></p>
 {% endif %}
 {% endblock %}

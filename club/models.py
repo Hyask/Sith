@@ -8,7 +8,6 @@ from django.core.urlresolvers import reverse
 from django.utils import timezone
 
 from core.models import User, MetaGroup, Group, SithFile
-from subscription.models import Subscriber
 
 # Create your models here.
 
@@ -33,7 +32,7 @@ class Club(models.Model):
     address = models.CharField(_('address'), max_length=254)
     # email = models.EmailField(_('email address'), unique=True) # This should, and will be generated automatically
     owner_group = models.ForeignKey(Group, related_name="owned_club",
-                                    default=settings.SITH_GROUPS['root']['id'])
+                                    default=settings.SITH_GROUP_ROOT_ID)
     edit_groups = models.ManyToManyField(Group, related_name="editable_club", blank=True)
     view_groups = models.ManyToManyField(Group, related_name="viewable_club", blank=True)
     home = models.OneToOneField(SithFile, related_name='home_of_club', verbose_name=_("home"), null=True, blank=True,
@@ -120,7 +119,7 @@ class Club(models.Model):
         """
         Method to see if that object can be seen by the given user
         """
-        sub = Subscriber.objects.filter(pk=user.pk).first()
+        sub = User.objects.filter(pk=user.pk).first()
         if sub is None:
             return False
         return sub.is_subscribed()
@@ -151,7 +150,7 @@ class Membership(models.Model):
     description = models.CharField(_('description'), max_length=128, null=False, blank=True)
 
     def clean(self):
-        sub = Subscriber.objects.filter(pk=self.user.pk).first()
+        sub = User.objects.filter(pk=self.user.pk).first()
         if sub is None or not sub.is_subscribed():
             raise ValidationError(_('User must be subscriber to take part to a club'))
         if Membership.objects.filter(user=self.user).filter(club=self.club).filter(end_date=None).exists():

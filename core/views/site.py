@@ -4,16 +4,34 @@ from django.http import JsonResponse
 from django.core import serializers
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
+from django.views.generic import ListView
 
 import os
 import json
 from itertools import chain
 
-from core.models import User
+from core.models import User, Notification
 from club.models import Club
 
 def index(request, context=None):
     return render(request, "core/index.jinja")
+
+class NotificationList(ListView):
+    model = Notification
+    template_name = "core/notification_list.jinja"
+
+    def get_queryset(self):
+        if 'see_all' in self.request.GET.keys():
+            self.request.user.notifications.update(viewed=True)
+        return self.request.user.notifications.order_by('-id')[:20]
+
+def notification(request, notif_id):
+    notif = Notification.objects.filter(id=notif_id).first()
+    if notif:
+        notif.viewed = True
+        notif.save()
+        return redirect(notif.url)
+    return redirect("/")
 
 def search_user(query, as_json=False):
     users = []
@@ -23,7 +41,7 @@ def search_user(query, as_json=False):
         users = User.objects.filter(Q(first_name__icontains=query) |
                 Q(last_name__icontains=query)).exclude(id__in=exact_nick).exclude(id__in=nicks).all()
         nicks = nicks[:5]
-        users = users[:5]
+        users = users[:50]
         if as_json: # Re-loads json to avoid double encoding by JsonResponse, but still benefit from serializers
             exact_nick = json.loads(serializers.serialize('json', exact_nick, fields=('nick_name', 'last_name', 'first_name', 'profile_pict')))
             nicks = json.loads(serializers.serialize('json', nicks, fields=('nick_name', 'last_name', 'first_name', 'profile_pict')))

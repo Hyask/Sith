@@ -24,11 +24,13 @@ class Picture(SithFile):
         return False
 
     def can_be_edited_by(self, user):
-        return user.is_in_group(settings.SITH_SAS_ADMIN_GROUP_ID)
+        file = SithFile.objects.filter(id=self.id).first()
+        return user.is_in_group(settings.SITH_GROUP_SAS_ADMIN_ID) or user.can_edit(file)
 
     def can_be_viewed_by(self, user):
+        file = SithFile.objects.filter(id=self.id).first()
         return self.can_be_edited_by(user) or (self.is_in_sas and self.is_moderated and
-                user.is_in_group(settings.SITH_MAIN_MEMBERS_GROUP))
+                user.was_subscribed()) or user.can_view(file)
 
     def get_download_url(self):
         return reverse('sas:download', kwargs={'picture_id': self.id})
@@ -69,23 +71,31 @@ class Picture(SithFile):
                     im.save(fp=file, format=self.mime_type.split('/')[-1].upper(), quality=90, optimize=True, progressive=True)
 
     def get_next(self):
-        return self.parent.children.filter(is_moderated=True, asked_for_removal=False, is_folder=False,
-                id__gt=self.id).order_by('id').first()
+        if self.is_moderated:
+            return self.parent.children.filter(is_moderated=True, asked_for_removal=False, is_folder=False,
+                    id__gt=self.id).order_by('id').first()
+        else:
+            return Picture.objects.filter(id__gt=self.id, is_moderated=False, is_in_sas=True).order_by('id').first()
 
     def get_previous(self):
-        return self.parent.children.filter(is_moderated=True, asked_for_removal=False, is_folder=False,
-                id__lt=self.id).order_by('id').last()
+        if self.is_moderated:
+            return self.parent.children.filter(is_moderated=True, asked_for_removal=False, is_folder=False,
+                    id__lt=self.id).order_by('id').last()
+        else:
+            return Picture.objects.filter(id__lt=self.id, is_moderated=False, is_in_sas=True).order_by('-id').first()
 
 class Album(SithFile):
     class Meta:
         proxy = True
 
     def can_be_edited_by(self, user):
-        return user.is_in_group(settings.SITH_SAS_ADMIN_GROUP_ID)
+        file = SithFile.objects.filter(id=self.id).first()
+        return user.is_in_group(settings.SITH_GROUP_SAS_ADMIN_ID) or user.can_edit(file)
 
     def can_be_viewed_by(self, user):
+        file = SithFile.objects.filter(id=self.id).first()
         return self.can_be_edited_by(user) or (self.is_in_sas and self.is_moderated and
-                user.is_in_group(settings.SITH_MAIN_MEMBERS_GROUP))
+                user.was_subscribed()) or user.can_view(file)
 
     def get_absolute_url(self):
         return reverse('sas:album', kwargs={'album_id': self.id})
