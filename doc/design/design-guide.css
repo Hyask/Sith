@@ -1,0 +1,28 @@
+/* Stylesheet of the design guide
+   It only contains style related to the structure of the design guide, not its content
+   The styleshet uses the BEM methodology, as block__element_modifier (https://en.bem.info)
+ */
+
+ /* Header block */
+
+ .header {
+
+ }
+
+ /* Navigation block */
+
+ .navigation {
+
+ }
+
+ /* Content block */
+
+ .content {
+
+ }
+
+ /* Footer block */
+
+ .footer {
+
+ }
