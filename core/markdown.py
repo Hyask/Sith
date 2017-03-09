@@ -26,8 +26,9 @@ class SithInlineGrammar(InlineGrammar):
     underline = re.compile(
         r'^_{2}([\s\S]+?)_{2}(?!_)'  # __word__
     )
-    exposant = re.compile( # FIXME Does not work for now
-        r'^\^([\s\S]+?)\^'  # ^text^
+    exposant = re.compile( # FIXME should work now
+        r'[^\\]?\^(.*?[^\\])\^' # ^text^ v2
+        #r'^\^([\s\S]+?)\^'  # ^text^
         # r'|' # FIXME doesn't properly works like this
         # r'^\^(\S+)'  # ^word
     )
