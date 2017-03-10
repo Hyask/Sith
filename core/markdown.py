@@ -27,13 +27,14 @@ class SithInlineGrammar(InlineGrammar):
         r'^_{2}([\s\S]+?)_{2}(?!_)'  # __word__
     )
     exposant = re.compile( # FIXME should work now
-        r'[^\\]?\^(.*?[^\\])\^' # ^text^ v2
+        r'^(?![^\\]?)\^(.*?[^\\])\^'  # ^text^ v2
         #r'^\^([\s\S]+?)\^'  # ^text^
         # r'|' # FIXME doesn't properly works like this
         # r'^\^(\S+)'  # ^word
     )
     indice = re.compile(
-        r'^_([\s\S]+?)_'  # _text_ (^` hack, because no other solution were found :/ this sadly prevent code in indices)
+        r'^(?![^\\\_]?)_(.*?[^\\\_])_'     # _text_ v2
+        #r'^_([\s\S]+?)_'  # _text_ (^` hack, because no other solution were found :/ this sadly prevent code in indices)
         # r'|' # FIXME doesn't properly works like this
         # r'^_(\S+)'  # _word
     )
@@ -162,7 +163,7 @@ Un bloc de citation se crée ainsi :
 
 Il est possible d'intégrer de la syntaxe Markdown-AE dans un tel bloc.
 
-Petit *test* _sur_ ^une^ **seule** ^ligne pour voir^
+Petit *test* _sur_ ^une^ **seule** ^ligne pour voir^ \_escaped meaning\_
 
 """
     print(markdown(text))
