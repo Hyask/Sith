@@ -1,170 +1,123 @@
-import re
-from mistune import Renderer, InlineGrammar, InlineLexer, Markdown
-from django.core.urlresolvers import reverse_lazy, reverse
+import ply.lex as lex
+import ply.yacc as yacc
+
+#dont forget to add 1x\n
+text = '''Sli is bad
+wut
+
+Sli sucksx2
+Sli sucks
 
 
-class SithRenderer(Renderer):
-    def file_link(self, id, suffix):
-        return reverse('core:file_detail', kwargs={'file_id': id}) + suffix
+Hello emphasis ima faggot exposant
+'''
 
-    def exposant(self, text):
-        return """<sup>%s</sup>""" % text
+print(text)
 
-    def indice(self, text):
-        return """<sub>%s</sub>""" % text
+tokens = (
+    'ESCAPE',
+    'EMPTY_LINE',
+    'EOL',
+    'HEADER',
+    'ORDERED_LIST',
+    'DOUBLE_STAR',
+    'STAR',
+    'STRIKETHROUGH',
+    'UNDERLINE', #MarkdownAE addition
+    'EXPOSANT', #MarkdownAE addition
+    'INDICE', #MarkdownAE addition
+    'LPARENTHESIS',
+    'RPARENTHESIS',
+    'LBRACKET',
+    'RBRACKET',
+    'BLOCKQUOTES',
+    'CODE',
+    'SPACE',
+    'WORD',
+)
 
-    def underline(self, text):
-        return """<span class="underline">%s</span>""" % text
 
-class SithInlineGrammar(InlineGrammar):
-    double_emphasis = re.compile(
-        r'^\*{2}([\s\S]+?)\*{2}(?!\*)'  # **word**
-    )
-    emphasis = re.compile(
-        r'^\*((?:\*\*|[^\*])+?)\*(?!\*)'  # *word*
-    )
-    underline = re.compile(
-        r'^_{2}([\s\S]+?)_{2}(?!_)'  # __word__
-    )
-    exposant = re.compile( # FIXME should work now
-        r'^(?![^\\]?)\^(.*?[^\\])\^'  # ^text^ v2
-        #r'^\^([\s\S]+?)\^'  # ^text^
-        # r'|' # FIXME doesn't properly works like this
-        # r'^\^(\S+)'  # ^word
-    )
-    indice = re.compile(
-        r'^(?![^\\\_]?)_(.*?[^\\\_])_'     # _text_ v2
-        #r'^_([\s\S]+?)_'  # _text_ (^` hack, because no other solution were found :/ this sadly prevent code in indices)
-        # r'|' # FIXME doesn't properly works like this
-        # r'^_(\S+)'  # _word
-    )
+#Rules
+t_ESCAPE          = r'\\'
+t_EMPTY_LINE      = r'(?m)^\n'
+t_EOL             = r'\n'
+t_HEADER          = r'(?m)^\#'
+t_ORDERED_LIST    = r'(?m)^[0-9]+'
+t_DOUBLE_STAR     = r'\*{2}'
+t_STAR            = r'\*'
+t_STRIKETHROUGH   = r'~~'
+t_UNDERLINE       = r'\_{2}'
+t_EXPOSANT        = r'\^'
+t_INDICE          = r'\_'
+t_LPARENTHESIS    = r'\('
+t_RPARENTHESIS    = r'\)'
+t_LBRACKET        = r'\['
+t_RBRACKET        = r'\]'
+t_BLOCKQUOTES     = r'(?m)^>'
+t_CODE            = r'`'
+t_SPACE           = r'\ '
+t_WORD            = r'\b\S+\b'
 
-class SithInlineLexer(InlineLexer):
-    grammar_class = SithInlineGrammar
 
-    default_rules = [
-        'escape',
-        'inline_html',
-        'autolink',
-        'url',
-        'footnote',
-        'link',
-        'reflink',
-        'nolink',
-        'exposant',
-        'double_emphasis',
-        'emphasis',
-        'underline',
-        'indice',
-        'code',
-        'linebreak',
-        'strikethrough',
-        'text',
-    ]
-    inline_html_rules = [
-        'escape',
-        'autolink',
-        'url',
-        'link',
-        'reflink',
-        'nolink',
-        'exposant',
-        'double_emphasis',
-        'emphasis',
-        'underline',
-        'indice',
-        'code',
-        'linebreak',
-        'strikethrough',
-        'text',
-    ]
+def t_error(t):
+    print("Illegal character '%s'" % t.value[0])
+    t.lexer.skip(1)
 
-    def output_underline(self, m):
-        text = m.group(1)
-        return self.renderer.underline(text)
 
-    def output_exposant(self, m):
-        text = m.group(1)
-        return self.renderer.exposant(text)
+lexer = lex.lex()
+lexer.input(text)
 
-    def output_indice(self, m):
-        text = m.group(1)
-        return self.renderer.indice(text)
 
-    # Double emphasis rule changed
-    def output_double_emphasis(self, m):
-        text = m.group(1)
-        text = self.output(text)
-        return self.renderer.double_emphasis(text)
+while True:
+    tok = lexer.token()
+    if not tok:
+        break
+    print(tok)
 
-    # Emphasis rule changed
-    def output_emphasis(self, m):
-        text = m.group(1)
-        text = self.output(text)
-        return self.renderer.emphasis(text)
 
-    def _process_link(self, m, link, title=None):
-        try: # Add page:// support for links
-            page = re.compile(
-                r'^page://(\S*)'                   # page://nom_de_ma_page
-            )
-            match = page.search(link)
-            page = match.group(1) or ""
-            link = reverse('core:page', kwargs={'page_name': page})
-        except: pass
-        try: # Add file:// support for links
-            file_link = re.compile(
-                r'^file://(\d*)/?(\S*)?'                   # file://4000/download
-            )
-            match = file_link.search(link)
-            id = match.group(1)
-            suffix = match.group(2) or ""
-            link = reverse('core:file_detail', kwargs={'file_id': id}) + suffix
-        except: pass
-        return super(SithInlineLexer, self)._process_link(m, link, title)
 
-renderer = SithRenderer(escape=True)
-inline = SithInlineLexer(renderer)
+# --- Parser ---
+def p_text_complex(p):
+    '''text : text text'''
+    p[0] = p[1] + p[2]
+    print(p[0])
 
-markdown = Markdown(renderer, inline=inline)
 
-if __name__ == "__main__":
-    print(markdown.inline.default_rules)
-    print(markdown.inline.inline_html_rules)
-    text = """
-## Basique
+def p_text(p):
+    '''text : line
+            | EMPTY_LINE'''
+    p[0] = p[1]
+    print(p[0])
+    print(p[0])
 
-* Mettre le texte en **gras** : `**texte**`
 
-* Mettre le texte en *italique* : `*texte*`
+def p_line_general(p):
+    '''line : sentence EOL'''
+    p[0] = p[1] + ' '
+    print(p[0])
 
-* __Souligner__ le texte : `__texte__`
 
-* ~~Barrer du texte~~ : `~~texte~~`
+def p_sentence_complex(p):
+    '''sentence : sentence sentence'''
+    p[0] = p[1] + p[2]
+    print(p[0])   
 
-* Mettre ^du texte^ en ^exposant^ : `^mot` ou `^texte^`
 
-* _Mettre du texte_ en _indice_ : `_mot` ou `_texte_`
+def p_sentence_word(p):
+    '''sentence : WORD
+                | SPACE'''
+    p[0] = p[1]
+    print(p[0])
 
-* Pied de page [^en pied de page]
 
-## Blocs de citations
 
-Un bloc de citation se crée ainsi :
-```
-> Ceci est
-> un bloc de
-> citation
-```
+def p_error(p):
+    print("error %s" % p)
+   
 
-> Ceci est
-> un bloc de
-> citation
+parser = yacc.yacc()
 
-Il est possible d'intégrer de la syntaxe Markdown-AE dans un tel bloc.
+output = parser.parse(text)
+print(output)
 
-Petit *test* _sur_ ^une^ **seule** ^ligne pour voir^ \_escaped meaning\_
-
-"""
-    print(markdown(text))
 
