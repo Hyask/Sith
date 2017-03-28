@@ -1,7 +1,6 @@
 import ply.lex as lex
 import ply.yacc as yacc
 
-#dont forget to add 1x\n
 text = '''# Sli is a perl wizard
 ## hello
 ### yy
@@ -9,9 +8,34 @@ text = '''# Sli is a perl wizard
 test
 this is a test
 
+ezofkez
+* zefez
+zefez
+
+> blockquoted
+> as
+> hell
+
+```
+THIS IS A CODE BLOCK
+PROVIDED
+BY
+*SLI*
+```
+
 
 Sli is a ~bad programmer~ **bery good programmer** *yes*
 Sli **sucks**
+
+* SLI
+* STOP
+* LOOKING
+* AT
+* MY
+* SCREEN 
+
+
+* oOo
 
 
 __underlined text__
@@ -29,6 +53,7 @@ print(text)
 tokens = (
     'ESCAPE', 
     'CODE', #done
+    'CODE_BLOCK', #done
     'EMPTY_LINE', #done
     'EOL', #done
     'HEADER', #done 
@@ -44,7 +69,7 @@ tokens = (
     'RPARENTHESIS',
     'LBRACKET',
     'RBRACKET',
-    'BLOCKQUOTES', 
+    'BLOCKQUOTE', 
     'SPACE', #done
     'WORD', #done
 )
@@ -52,12 +77,13 @@ tokens = (
 
 #Rules
 t_ESCAPE          = r'\\'
+t_CODE_BLOCK      = r'^```(.|\n)*?^```\n'
 t_CODE            = r'`.*?`'
 t_EMPTY_LINE      = r'(?m)^\n'
 t_EOL             = r'\n'
 t_HEADER          = r'(?m)^\#+'
-t_UNORDERED_LIST  = r'(?m)^\*'
-t_ORDERED_LIST    = r'(?m)^[0-9]+'
+t_UNORDERED_LIST  = r'(?m)^\*\ '
+t_ORDERED_LIST    = r'(?m)^[0-9]+\ '
 t_SEMPHASIS       = r'\*{2}.*?\*{2}'
 t_LEMPHASIS       = r'\*.*?\*'
 t_STRIKETHROUGH   = r'~.*?~'
@@ -68,7 +94,7 @@ t_LPARENTHESIS    = r'\('
 t_RPARENTHESIS    = r'\)'
 t_LBRACKET        = r'\['
 t_RBRACKET        = r'\]'
-t_BLOCKQUOTES     = r'(?m)^>'
+t_BLOCKQUOTE      = r'(?m)^>\ '
 t_SPACE           = r'\ '
 t_WORD            = r'\b\S+\b'
 
@@ -99,13 +125,31 @@ def p_text_complex(p):
 def p_text(p):
     '''text : line
             | EMPTY_LINE
-            | header_line'''
+            | header_line
+            | unordered_list
+            | code_block
+            | blockquote'''
     p[0] = p[1]
 
 
 def p_line_general(p):
     '''line : sentence EOL'''
     p[0] = p[1] + ' '
+
+
+#multiline
+def p_code_block(p):
+    '''code_block : CODE_BLOCK'''
+    p[0] = "<code>" + p[1][3:-4] + "</code>"
+
+
+def p_blockquote(p):
+    '''blockquote : BLOCKQUOTE sentence EOL'''
+    p[0] = "<blockquote>" + p[2] + "</blockquote>" + p[3]
+
+def p_unordered_list(p):
+    '''unordered_list : UNORDERED_LIST sentence EOL'''
+    p[0] = "<li>" + p[2] + "</li>" + p[3]
 
 
 def p_header_line(p):
@@ -116,7 +160,7 @@ def p_header_line(p):
 
     p[0] = "<h" + str(len(p[1]))  + ">" + p[2] + "</h" + str(len(p[1]))  + ">" + p[3]
 
-
+#inline
 def p_sentence_complex(p):
     '''sentence : sentence sentence'''
     p[0] = p[1] + p[2]
