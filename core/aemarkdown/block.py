@@ -12,17 +12,23 @@ def blockParser(text):
         'HEADER',
         'UNORDERED_LIST',
         'ORDERED_LIST',
+        'BLOCKQUOTE',
+        'TABLE_HEADER',
+        'TABLE_CONTENT',
         'EMPTY_LINE',
-        'LINE',
+        'PARAGRAPH',
     )
 
     #lexer rules
     t_CODE_BLOCK       = r'^```(.|\n)*?^```'
     t_HEADER           = r'(?m)^\#+'
     t_UNORDERED_LIST   = r'(?m)^(\*.*?\n)+'
-    t_ORDERED_LIST     = r'(?m)^(1.*?\n)+'
+    t_ORDERED_LIST     = r'(?m)^([0-9]+.*?\n)+'
+    t_BLOCKQUOTE       = r'(?m)^(>\ .*?\n)+'
+    t_TABLE_HEADER     = r'(?m)^\|.+\|\n\|-.*?\n'
+    t_TABLE_CONTENT    = r'(?m)(^\|.+?\|\n)+'
     t_EMPTY_LINE       = r'(?m)^\n'
-    t_LINE             = r'(?m)^.*\n'
+    t_PARAGRAPH        = r'(?m)^(.+?\n)+'
 
 
     def t_error(t):
@@ -44,12 +50,15 @@ def blockParser(text):
         p[0] = p[1] + p[2]
 
     def p_text(p):
-        '''text : paragraph
-                | code_block
+        '''text : code_block
                 | HEADER
                 | unordered_list_block
                 | ordered_list_block
-                | EMPTY_LINE'''
+                | blockquote
+                | empty_line
+                | table_header
+                | table_content
+                | paragraph'''
         p[0] = p[1]
 
 
@@ -65,16 +74,36 @@ def blockParser(text):
     def p_unordered_list_block(p):
         '''unordered_list_block : UNORDERED_LIST'''
         p[0] = "<ul>\n" + p[1] + "</ul>\n"
-    
 
-    def p_paragraph_complex(p):
-        '''paragraph : paragraph paragraph'''
-        p[0] = p[1] + p[2]
+    def p_blockquote(p):
+        '''blockquote : BLOCKQUOTE'''
+        p[0] = "<blockquote>\n" + p[1] + "</blockquote>\n"
 
+    def p_table_header(p):
+        '''table_header : TABLE_HEADER'''
+        p[0] = "<table>\n" + p[1]
+
+    def p_table_content(p):
+        '''table_content : TABLE_CONTENT'''
+        p[0] = p[1] + "\n</table>"
 
     def p_paragraph(p):
-        '''paragraph : LINE'''
-        p[0] = p[1]
+        '''paragraph : PARAGRAPH'''
+        p[0] = "<p>\n" + p[1] + "\n</p>"
+    
+
+    #def p_paragraph_complex(p):
+    #    '''paragraph : paragraph paragraph'''
+    #    p[0] = p[1] + p[2]
+
+
+    #def p_paragraph(p):
+        #'''paragraph : LINE'''
+        #p[0] = p[1]
+
+    def p_empty_line(p):
+        '''empty_line : EMPTY_LINE'''
+        p[0] = "</br>\n"
 
     def p_error(p):
         print("error %s" % p)

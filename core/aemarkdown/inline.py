@@ -1,5 +1,6 @@
 import ply.lex as lex
 import ply.yacc as yacc
+import re
 
 def inlineParser(text):
 
@@ -12,6 +13,7 @@ def inlineParser(text):
         'CODE', 
         'CODE_BLOCK',
         'EMPTY_LINE',
+        'LONE_HTML', #match block parser resulting html
         'EOL',
         'HEADER',
         'UNORDERED_LIST',
@@ -22,10 +24,10 @@ def inlineParser(text):
         'UNDERLINE', 
         'EXPOSANT', 
         'INDICE', 
-        'LPARENTHESIS', 
-        'RPARENTHESIS',
-        'LBRACKET',
-        'RBRACKET',
+        'NAMED_LINK',
+        'LINK',
+        #'TABLE_HEADER',
+        #'TABLE_CONTENT'
         'BLOCKQUOTE', 
         'SPACE', 
         'WORD', 
@@ -38,20 +40,21 @@ def inlineParser(text):
     t_CODE_BLOCK      = r'^```(.|\n)*?^```\n'
     t_CODE            = r'`.*?`'
     t_EMPTY_LINE      = r'(?m)^\n'
+    t_LONE_HTML       = r'(?m)^<.*?>\n'
     t_EOL             = r'\n'
     t_HEADER          = r'(?m)^\#+'
     t_UNORDERED_LIST  = r'(?m)^\*\ '
-    t_ORDERED_LIST    = r'(?m)^1\ '
+    t_ORDERED_LIST    = r'(?m)^[0-9]+\ '
     t_SEMPHASIS       = r'\*{2}.*?\*{2}'
     t_LEMPHASIS       = r'\*.*?\*'
     t_STRIKETHROUGH   = r'~.*?~'
     t_UNDERLINE       = r'\_{2}.*?\_{2}'
     t_EXPOSANT        = r'\^.*?\^'
     t_INDICE          = r'\_.*?\_'
-    t_LPARENTHESIS    = r'\('
-    t_RPARENTHESIS    = r'\)'
-    t_LBRACKET        = r'\['
-    t_RBRACKET        = r'\]'
+    t_NAMED_LINK      = r'\[.+?\]\((ht|f)tp://[^\s]+\)'
+    t_LINK            = r'(ht|f)tp://[^\s]+'
+    #t_TABLE_HEADER    = r''
+    #t_TABLE_CONTENT   = r''
     t_BLOCKQUOTE      = r'(?m)^>\ '
     t_SPACE           = r'\ '
     t_WORD            = r'\b\S+\b'
@@ -86,13 +89,15 @@ def inlineParser(text):
                 | unordered_list
                 | ordered_list
                 | blockquote
-                | CODE_BLOCK'''
+                | CODE_BLOCK
+                | LONE_HTML'''
         p[0] = p[1]
 
 
     def p_text_empty_line(p):
         '''text : EMPTY_LINE'''
-        p[0] = "\n</br>\n"
+        #p[0] = "\n</br>\n"
+        p[0] = p[1]
 
 
     def p_line_general(p):
@@ -103,7 +108,7 @@ def inlineParser(text):
     #multiline
     def p_blockquote(p):
         '''blockquote : BLOCKQUOTE sentence EOL'''
-        p[0] = "<blockquote>" + p[2] + "</blockquote>" + p[3]
+        p[0] = p[2] + "</br>"
 
 
     def p_unordered_list(p):
@@ -153,6 +158,18 @@ def inlineParser(text):
     def p_sentence_indice(p):
         '''sentence : INDICE'''
         p[0] = "<sub>" + p[1][1:-1] + "</sup>"
+
+    def p_sentence_named_link(p):
+        '''sentence : NAMED_LINK'''
+
+        name = re.sub(r'\[(.+?)\]\(.+?\)',r'\g<1>', p[1]) 
+        link = re.sub(r'\[.+?\]\((.+?)\)', r'\g<1>', p[1]) #retrieving name and link
+
+        p[0] = "<a href=\"" + link + "\">" + name + "</a>"
+
+    def p_sentence_link(p):
+        '''sentence : LINK'''
+        p[0] = "<a href=\"" + p[1] + "\">" + p[1] +"</a>"
 
     def p_sentence_inline_code(p):
         '''sentence : CODE'''

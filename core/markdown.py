@@ -1,50 +1,47 @@
 import aemarkdown.inline as inline
 import aemarkdown.block as block
 
-text = '''# Sli is a perl wizard
-## hello
-### yy
-#### pppp
-test
-this is a test 
+text = '''
+this is a link http://link huhu
+this is a named link [named](http://www.SliSux.com) k
 
-1 beware
-1 the 
-1 ordered
-1 list
 
-> blockquoted
-> as
-> hell
+# Title 1
+
+## Title 2
+
+### Title 3
+
+
+
+this is a normal paragraph
+
+
+1 this
+2 is
+15 an
+254 ordered list
+
+> this is a blockquoted
+> text
 
 ```
 THIS IS A CODE BLOCK
-PROVIDED
-BY
-*SLI*
+Nothing is **interpreted** here
 ```
 
 
-Sli is a ~bad programmer~ **very good programmer** *yes*
-Sli **sucks**
+Inline test : ~Strikethrough~ *emphasis* **double emphasis** ^exposant^ _indice_ __underlined__
 
-* SLI
-* STOP
-* LOOKING
-* AT
-* MY
-* SCREEN 
+* an
+* unordered
+* list
 
+text inside code `code`
 
-* oOo
-
-
-__underlined text__
-Hello ima *faggot* ^exposant^ _underline_
-
-`hello ima code`
-
-`hello ime *troll* code`'''
+| Titre1 | Titre2 | Titre3 |
+|--------|--------|--------|
+| test   | test   | test   |'''
 
 print(text)
 
@@ -52,3 +49,5 @@ blockOutput = block.blockParser(text)
 finalOutput = inline.inlineParser(blockOutput)
 
 print(finalOutput)
+
+markdown = finalOutput
