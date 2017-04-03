@@ -46,15 +46,14 @@ text inside code `code`
 Vous pouvez le faire en priori
 Il y'a aussi des MaKrons'''
 
-def markdown(text):
 
-    print(text)
+def markdown(text, escape=True, **kwargs):
 
-    finalOutput = block.blockParser(text)
+    if text != '':
+        return block.blockParser(text)
+    else:
+        return ''
 
-    print(finalOutput)
-
-    return finalOutput
 
 if __name__ == "__main__":
 
@@ -64,4 +63,4 @@ if __name__ == "__main__":
     finalOutput = block.blockParser(text)
 
     print(finalOutput)
-    
+
