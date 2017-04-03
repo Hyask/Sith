@@ -12,5 +12,6 @@ reportlab
 django-haystack
 whoosh
 django-debug-toolbar
+ply
 # mysqlclient
 
