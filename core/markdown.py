@@ -1,5 +1,5 @@
-import aemarkdown.inline as inline
-import aemarkdown.block as block
+import core.aemarkdown.inline as inline
+import core.aemarkdown.block as block
 
 text = '''
 this is a link http://link huhu
@@ -46,10 +46,22 @@ text inside code `code`
 Vous pouvez le faire en priori
 Il y'a aussi des MaKrons'''
 
-print(text)
+def markdown(text):
 
-finalOutput = block.blockParser(text)
+    print(text)
 
-print(finalOutput)
+    finalOutput = block.blockParser(text)
 
-markdown = finalOutput
+    print(finalOutput)
+
+    return finalOutput
+
+if __name__ == "__main__":
+
+
+    print(text)
+
+    finalOutput = block.blockParser(text)
+
+    print(finalOutput)
+    

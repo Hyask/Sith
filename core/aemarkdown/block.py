@@ -1,6 +1,6 @@
 import ply.lex as lex
 import ply.yacc as yacc
-import aemarkdown.inline as inline
+import core.aemarkdown.inline as inline
 
 def blockParser(text):
 
