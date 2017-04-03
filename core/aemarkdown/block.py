@@ -1,5 +1,6 @@
 import ply.lex as lex
 import ply.yacc as yacc
+import aemarkdown.inline as inline
 
 def blockParser(text):
 
@@ -25,7 +26,7 @@ def blockParser(text):
     t_UNORDERED_LIST   = r'(?m)^(\*.*?\n)+'
     t_ORDERED_LIST     = r'(?m)^([0-9]+.*?\n)+'
     t_BLOCKQUOTE       = r'(?m)^(>\ .*?\n)+'
-    t_TABLE_HEADER     = r'(?m)^\|.+\|\n\|-.*?\n'
+    t_TABLE_HEADER     = r'(?m)^\|.+\|\n\|\ ?:?-.*?\n'
     t_TABLE_CONTENT    = r'(?m)(^\|.+?\|\n)+'
     t_EMPTY_LINE       = r'(?m)^\n'
     t_PARAGRAPH        = r'(?m)^(.+?\n)+'
@@ -69,37 +70,28 @@ def blockParser(text):
 
     def p_ordered_list_block(p):
         '''ordered_list_block : ORDERED_LIST'''
-        p[0] = "<ol>\n" + p[1] + "</ol>\n"
+        p[0] = "<ol>\n" + inline.inlineParser(p[1]) + "</ol>\n"
 
     def p_unordered_list_block(p):
         '''unordered_list_block : UNORDERED_LIST'''
-        p[0] = "<ul>\n" + p[1] + "</ul>\n"
+        p[0] = "<ul>\n" + inline.inlineParser(p[1]) + "</ul>\n"
 
     def p_blockquote(p):
         '''blockquote : BLOCKQUOTE'''
-        p[0] = "<blockquote>\n" + p[1] + "</blockquote>\n"
+        p[0] = "<blockquote>\n" + inline.inlineParser(p[1]) + "</blockquote>\n"
 
     def p_table_header(p):
         '''table_header : TABLE_HEADER'''
-        p[0] = "<table>\n" + p[1]
+        p[0] = "<table>\n" + inline.inlineParser(p[1])
 
     def p_table_content(p):
         '''table_content : TABLE_CONTENT'''
-        p[0] = p[1] + "\n</table>"
+        p[0] = inline.inlineParser(p[1]) + "</table>\n"
 
     def p_paragraph(p):
         '''paragraph : PARAGRAPH'''
-        p[0] = "<p>\n" + p[1] + "\n</p>"
+        p[0] = "<p>\n" + inline.inlineParser(p[1]) + "\n</p>\n"
     
-
-    #def p_paragraph_complex(p):
-    #    '''paragraph : paragraph paragraph'''
-    #    p[0] = p[1] + p[2]
-
-
-    #def p_paragraph(p):
-        #'''paragraph : LINE'''
-        #p[0] = p[1]
 
     def p_empty_line(p):
         '''empty_line : EMPTY_LINE'''

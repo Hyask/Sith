@@ -26,8 +26,8 @@ def inlineParser(text):
         'INDICE', 
         'NAMED_LINK',
         'LINK',
-        #'TABLE_HEADER',
-        #'TABLE_CONTENT'
+        'TABLE_HEADER',
+        'TABLE_CONTENT',
         'BLOCKQUOTE', 
         'SPACE', 
         'WORD', 
@@ -53,8 +53,8 @@ def inlineParser(text):
     t_INDICE          = r'\_.*?\_'
     t_NAMED_LINK      = r'\[.+?\]\((ht|f)tp://[^\s]+\)'
     t_LINK            = r'(ht|f)tp://[^\s]+'
-    #t_TABLE_HEADER    = r''
-    #t_TABLE_CONTENT   = r''
+    t_TABLE_HEADER    = r'(?m)^\|.+\|\n\|\ ?:?-.*?\n'
+    t_TABLE_CONTENT   = r'(?m)(^\|.+?\|\n)+'
     t_BLOCKQUOTE      = r'(?m)^>\ '
     t_SPACE           = r'\ '
     t_WORD            = r'\b\S+\b'
@@ -90,7 +90,9 @@ def inlineParser(text):
                 | ordered_list
                 | blockquote
                 | CODE_BLOCK
-                | LONE_HTML'''
+                | LONE_HTML
+                | table_header
+                | table_content'''
         p[0] = p[1]
 
 
@@ -127,6 +129,38 @@ def inlineParser(text):
             p[2] = p[2][1:]
 
         p[0] = "<h" + str(len(p[1]))  + ">" + p[2] + "</h" + str(len(p[1]))  + ">" + p[3] #dynamic title composition
+    
+    def p_table_header(p):
+        '''table_header : TABLE_HEADER'''
+
+        trueHeader = p[1].splitlines(True)[0]
+        headerComponentList = trueHeader[1:-2].split("|") #remove first and last "|" before splitting
+        finalHeader = ""
+
+        for element in headerComponentList:
+            finalHeader = finalHeader + "<th>" + element + "</th>\n"
+
+        p[0] = "<tr>\n" + finalHeader + "</tr>\n"
+
+
+    def p_table_content(p):
+        '''table_content : TABLE_CONTENT'''
+
+        rowList = p[1].splitlines(True)
+        finalContent = ""
+
+        for element in rowList: #action to perform on every row
+            columnListByRow = element[1:-2].split("|") #remove first and last "|" before splitting
+            finalContent += "<tr>\n"
+
+
+            for el in columnListByRow:
+                finalContent = finalContent + "<td>" + el + "</td>\n"
+
+            finalContent = finalContent + "</tr>\n"
+
+        p[0] = "<table>\n" + finalContent + "</table>\n"
+
 
 
     #inline
@@ -135,7 +169,7 @@ def inlineParser(text):
         p[0] = p[1] + p[2]
 
 
-    def p_sentence_stong_emphasis(p):
+    def p_sentence_strong_emphasis(p):
         '''sentence : SEMPHASIS'''
         p[0] = "<b>" + p[1][2:-2] + "</b>"
 

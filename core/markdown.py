@@ -41,12 +41,14 @@ text inside code `code`
 
 | Titre1 | Titre2 | Titre3 |
 |--------|--------|--------|
-| test   | test   | test   |'''
+| test   | test   | test   |
+
+Vous pouvez le faire en priori
+Il y'a aussi des MaKrons'''
 
 print(text)
 
-blockOutput = block.blockParser(text)
-finalOutput = inline.inlineParser(blockOutput)
+finalOutput = block.blockParser(text)
 
 print(finalOutput)
 
