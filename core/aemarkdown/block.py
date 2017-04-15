@@ -1,11 +1,13 @@
 import ply.lex as lex
 import ply.yacc as yacc
 import core.aemarkdown.inline as inline
+#import aemarkdown.inline as inline
 
 def blockParser(text):
 
-    if text[-1] != '\n':
-        text = text + "\n"
+    #if text[-1] != '\n':
+    #    text = text + "\n"
+    #dont forget to put that back and to manage the empty string
 
     #lexer
     tokens = (
@@ -38,11 +40,11 @@ def blockParser(text):
     lexer = lex.lex()
     lexer.input(text)
 
-    while True:
-        tok = lexer.token()
-        if not tok:
-            break
-        print(tok)
+    #while True:
+    #    tok = lexer.token()
+    #    if not tok:
+    #        break
+    #    print(tok)
 
 
     #parser
@@ -91,7 +93,7 @@ def blockParser(text):
     def p_paragraph(p):
         '''paragraph : PARAGRAPH'''
         p[0] = "<p>\n" + inline.inlineParser(p[1]) + "\n</p>\n"
-    
+
 
     def p_empty_line(p):
         '''empty_line : EMPTY_LINE'''
@@ -103,5 +105,5 @@ def blockParser(text):
     parser = yacc.yacc()
     output = parser.parse(text)
 
-    print(output)
+    #print(output)
     return output
