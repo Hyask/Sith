@@ -1,7 +1,9 @@
 import core.aemarkdown.inline as inline
 import core.aemarkdown.block as block
+#import aemarkdown.block as block
 
 text = '''
+KnotawordK
 this is a link http://link huhu
 this is a named link [named](http://www.SliSux.com) k
 
@@ -20,7 +22,7 @@ this is a normal paragraph
 1 this
 2 is
 15 an
-254 ordered list
+254 ordered **iekde** list
 
 > this is a blockquoted
 > text
@@ -46,15 +48,26 @@ text inside code `code`
 Vous pouvez le faire en priori
 Il y'a aussi des MaKrons'''
 
+atext='''#zepoezkf
+
+* fff
+* vfff
+* ffff
+
+zfref
+rfref
+erfef'''
+
 def markdown(text):
 
-    print(text)
+    #print(text)
 
     finalOutput = block.blockParser(text)
 
-    print(finalOutput)
+    #print(finalOutput)
 
     return finalOutput
+
 
 if __name__ == "__main__":
 
@@ -64,4 +77,3 @@ if __name__ == "__main__":
     finalOutput = block.blockParser(text)
 
     print(finalOutput)
-    

@@ -9,48 +9,44 @@ def inlineParser(text):
 
 
     tokens = (
-        'ESCAPE', 
-        'CODE', 
-        'CODE_BLOCK',
-        'EMPTY_LINE',
+        'ESCAPE',
+        'CODE',
         'LONE_HTML', #match block parser resulting html
         'EOL',
         'HEADER',
         'UNORDERED_LIST',
         'ORDERED_LIST',
         'SEMPHASIS',
-        'LEMPHASIS', 
+        'LEMPHASIS',
         'STRIKETHROUGH',
-        'UNDERLINE', 
-        'EXPOSANT', 
-        'INDICE', 
+        'INDICE',
+        'UNDERLINE',
+        'EXPOSANT',
         'NAMED_LINK',
         'LINK',
         'TABLE_HEADER',
         'TABLE_CONTENT',
-        'BLOCKQUOTE', 
-        'SPACE', 
-        'WORD', 
+        'BLOCKQUOTE',
+        'SPACE',
+        'WORD',
         'OTHER',
     )
 
 
     #Rules
     t_ESCAPE          = r'\\'
-    t_CODE_BLOCK      = r'^```(.|\n)*?^```\n'
     t_CODE            = r'`.*?`'
-    t_EMPTY_LINE      = r'(?m)^\n'
     t_LONE_HTML       = r'(?m)^<.*?>\n'
     t_EOL             = r'\n'
     t_HEADER          = r'(?m)^\#+'
     t_UNORDERED_LIST  = r'(?m)^\*\ '
     t_ORDERED_LIST    = r'(?m)^[0-9]+\ '
-    t_SEMPHASIS       = r'\*{2}.*?\*{2}'
-    t_LEMPHASIS       = r'\*.*?\*'
-    t_STRIKETHROUGH   = r'~.*?~'
-    t_UNDERLINE       = r'\_{2}.*?\_{2}'
-    t_EXPOSANT        = r'\^.*?\^'
-    t_INDICE          = r'\_.*?\_'
+    t_SEMPHASIS       = r'\*{2}.+?\*{2}'
+    t_LEMPHASIS       = r'\*.+?\*'
+    t_STRIKETHROUGH   = r'~.+?~'
+    t_INDICE          = r'\_.+?\_'
+    t_UNDERLINE       = r'\_{2}.+?\_{2}'
+    t_EXPOSANT        = r'\^.+?\^'
     t_NAMED_LINK      = r'\[.+?\]\((ht|f)tp://[^\s]+\)'
     t_LINK            = r'(ht|f)tp://[^\s]+'
     t_TABLE_HEADER    = r'(?m)^\|.+\|\n\|\ ?:?-.*?\n'
@@ -69,11 +65,11 @@ def inlineParser(text):
     lexer.input(text)
 
 
-    while True:
-        tok = lexer.token()
-        if not tok:
-            break
-        print(tok)
+    #while True:
+    #    tok = lexer.token()
+    #    if not tok:
+    #        break
+    #    print(tok)
 
 
 
@@ -89,18 +85,10 @@ def inlineParser(text):
                 | unordered_list
                 | ordered_list
                 | blockquote
-                | CODE_BLOCK
                 | LONE_HTML
                 | table_header
                 | table_content'''
         p[0] = p[1]
-
-
-    def p_text_empty_line(p):
-        '''text : EMPTY_LINE'''
-        #p[0] = "\n</br>\n"
-        p[0] = p[1]
-
 
     def p_line_general(p):
         '''line : sentence EOL'''
@@ -129,7 +117,7 @@ def inlineParser(text):
             p[2] = p[2][1:]
 
         p[0] = "<h" + str(len(p[1]))  + ">" + p[2] + "</h" + str(len(p[1]))  + ">" + p[3] #dynamic title composition
-    
+
     def p_table_header(p):
         '''table_header : TABLE_HEADER'''
 
@@ -191,12 +179,12 @@ def inlineParser(text):
 
     def p_sentence_indice(p):
         '''sentence : INDICE'''
-        p[0] = "<sub>" + p[1][1:-1] + "</sup>"
+        p[0] = "<sub>" + p[1][1:-1] + "</sub>"
 
     def p_sentence_named_link(p):
         '''sentence : NAMED_LINK'''
 
-        name = re.sub(r'\[(.+?)\]\(.+?\)',r'\g<1>', p[1]) 
+        name = re.sub(r'\[(.+?)\]\(.+?\)',r'\g<1>', p[1])
         link = re.sub(r'\[.+?\]\((.+?)\)', r'\g<1>', p[1]) #retrieving name and link
 
         p[0] = "<a href=\"" + link + "\">" + name + "</a>"
@@ -220,10 +208,10 @@ def inlineParser(text):
 
     def p_error(p):
         print("error %s" % p)
-       
+
 
     parser = yacc.yacc()
 
     output = parser.parse(text)
-    
+
     return output;
