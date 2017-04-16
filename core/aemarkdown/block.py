@@ -5,9 +5,8 @@ import core.aemarkdown.inline as inline
 
 def blockParser(text):
 
-    #if text[-1] != '\n':
-    #    text = text + "\n"
-    #dont forget to put that back and to manage the empty string
+    if text[-1] != '\n':
+        text = text + "\n"
 
     #lexer
     tokens = (
@@ -37,7 +36,7 @@ def blockParser(text):
     def t_error(t):
         t.lexer.skip(1)
 
-    lexer = lex.lex()
+    lexer = lex.lex(debug=False, optimize=1)
     lexer.input(text)
 
     #while True:
@@ -102,7 +101,7 @@ def blockParser(text):
     def p_error(p):
         print("error %s" % p)
 
-    parser = yacc.yacc()
+    parser = yacc.yacc(debug=False, tabmodule="core.aemarkdown.parsetab")
     output = parser.parse(text)
 
     #print(output)

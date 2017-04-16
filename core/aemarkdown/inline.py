@@ -9,7 +9,7 @@ def inlineParser(text):
 
 
     tokens = (
-        'ESCAPE',
+#        'ESCAPE',
         'CODE',
         'LONE_HTML', #match block parser resulting html
         'EOL',
@@ -34,7 +34,7 @@ def inlineParser(text):
 
 
     #Rules
-    t_ESCAPE          = r'\\'
+#    t_ESCAPE          = r'\\'
     t_CODE            = r'`.*?`'
     t_LONE_HTML       = r'(?m)^<.*?>\n'
     t_EOL             = r'\n'
@@ -61,7 +61,7 @@ def inlineParser(text):
         t.lexer.skip(1)
 
 
-    lexer = lex.lex()
+    lexer = lex.lex(debug=False, optimize=1)
     lexer.input(text)
 
 
@@ -210,8 +210,7 @@ def inlineParser(text):
         print("error %s" % p)
 
 
-    parser = yacc.yacc()
-
+    parser = yacc.yacc(debug=False, tabmodule="core.aemarkdown.parsetab2")
     output = parser.parse(text)
 
     return output;
