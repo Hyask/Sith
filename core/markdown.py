@@ -48,21 +48,12 @@ text inside code `code`
 Vous pouvez le faire en priori
 Il y'a aussi des MaKrons'''
 
-atext='''#zepoezkf
+def markdown(text, escape=True, **kwargs):
 
-* fff
-* vfff
-* ffff
-
-zfref
-rfref
-erfef'''
-
-def markdown(text):
-
-    #print(text)
-
-    finalOutput = block.blockParser(text)
+    if text != '':
+        return block.blockParser(text)
+    else:
+        return ''
 
     #print(finalOutput)
 
