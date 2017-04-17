@@ -51,6 +51,8 @@ Il y'a aussi des MaKrons'''
 def markdown(text, escape=True, **kwargs):
 
     if text != '':
+        # Avoid errors from jinja
+        text = text.replace('\r', '')
         return block.blockParser(text)
     else:
         return ''
