@@ -29,18 +29,49 @@
                 <li class="navigation__list-item">
                     <a class="navigation__link" href="#">Colours</a>
                 </li>
-                
+                <li class="navigation__list-item">
+                    <a class="navigation__link" href="#Components">Components</a>
+                </li>
             </ul>
         </nav>
     </aside>
     <main class="content">
-        <section class="chapter">
-            <h2 class="chapter__title">Chapter Title</h2>
+        <section class="section">
+            <h2 class="section__title">Introduction</h2>
 
 
         </section>
-        <section class="chapter">
-
+        <section class="section">
+            <h2 class="section__title">Usage</h2>
+        </section>
+        <section class="section">
+            <h2 class="section__title">Typography</h2>
+        </section>
+        <section class="section">
+            <h2 class="section__title">Colours</h2>
+        </section>
+        <section class="section">
+            <h2 class="section__title" id=¨components¨>Components</h2>
+            <article class="component">
+                <h3>Button</h3>
+                <figure>
+                    <code data-language="jinja2"><pre class="component__code">
+{% macro ui_button(label, icon_name) %}
+&lt;button class="button">
+    &lt;span class="button__label">{% trans %}{{ label }}{% endtrans %}&lt;/span>
+    {%- if icon_name -%}
+    &lt;span class="button__icon">{{ icon_name }}&lt;/span>
+    {%- endif -%}
+&lt;/button>
+{macro}</pre></code>
+                    <figcaption>Macro code</figcaption>
+                </figure>
+                <figure>
+                    <code data-language="jinja2"><pre class="component__code">
+{{ ui_button("Submit", "home") }}</pre></code>
+                    <figcaption>Usage</figcaption>
+                </figure>
+            </article>
         </section>
     </main>
     <footer class="footer"></footer>

@@ -3,26 +3,17 @@
    The styleshet uses the BEM methodology, as block__element_modifier (https://en.bem.info)
  */
 
- /* Header block */
+html {
+	font-size: 16px;
+}
 
- .header {
+body {
+	font-size: .875rem;
+}
 
- }
-
- /* Navigation block */
-
- .navigation {
-
- }
-
- /* Content block */
-
- .content {
-
- }
-
- /* Footer block */
-
- .footer {
-
- }
+.component__code {
+	border: 1px solid lightgrey;
+	background: hsl(0, 0%, 90%);
+	border-radius: .25rem;
+	padding: .5rem;
+}
