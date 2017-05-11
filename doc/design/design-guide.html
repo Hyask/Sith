@@ -55,22 +55,42 @@
             <article class="component">
                 <h3>Button</h3>
                 <figure>
+                    <figcaption>Macro signature</figcaption>
                     <code data-language="jinja2"><pre class="component__code">
-{% macro ui_button(label, icon_name) %}
-&lt;button class="button">
-    &lt;span class="button__label">{% trans %}{{ label }}{% endtrans %}&lt;/span>
-    {%- if icon_name -%}
-    &lt;span class="button__icon">{{ icon_name }}&lt;/span>
-    {%- endif -%}
-&lt;/button>
-{macro}</pre></code>
-                    <figcaption>Macro code</figcaption>
+{{ ui_button(label, icon, type='button', class=[], **kwargs) }}</pre></code>
                 </figure>
+                <dl>
+                    <dt>label</dt>
+                    <dd>Used to represent the label of the button. Translated in the macro.</dd>
+                    <dt>icon</dt>
+                    <dd>Used to reference a specific icon from the <a href="https://material.io/icons/">Material Design Icons</a>.</dd>
+                    <dt>type</dt>
+                    <dd></dd>
+                    <dt>class</dt>
+                    <dd></dd>
+                    <dt>kwargs</dt>
+                    <dd></dd>
+                </dl>
+            </article>
+            <article class="component">
+                <h3>Link</h3>
                 <figure>
+                    <figcaption>Macro signature</figcaption>
                     <code data-language="jinja2"><pre class="component__code">
-{{ ui_button("Submit", "home") }}</pre></code>
-                    <figcaption>Usage</figcaption>
+{{ ui_link(label, icon, href='', class=[], **kwargs) }}</pre></code>
                 </figure>
+                <dl>
+                    <dt>label</dt>
+                    <dd>Used to represent the label of the button. Translated in the macro.</dd>
+                    <dt>icon</dt>
+                    <dd>Used to reference a specific icon from the <a href="https://material.io/icons/">Material Design Icons</a>.</dd>
+                    <dt>href</dt>
+                    <dd></dd>
+                    <dt>class</dt>
+                    <dd></dd>
+                    <dt>kwargs</dt>
+                    <dd></dd>
+                </dl>
             </article>
         </section>
     </main>

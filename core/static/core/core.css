@@ -1,1 +1,138 @@
-/* Core style file for new design */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: hsl(219.6, 20.8%, 98%);
+  
+  font-size: 16px;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  
+  font-size: .875rem;
+}
+
+.button-types {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button {  
+  background-color: hsl(219.6, 20.8%, 98%);
+  color: hsla(0, 0%, 0%, .87);
+  
+  border: 1px solid hsl(219.6, 20.8%, 83%);
+  font-size: 1em;
+  line-height: 1rem;
+  font-weight: 600;
+  padding: 0 calc(1rem - 1px);
+  border-radius: .125rem;
+  cursor: pointer;
+  margin: .25rem;
+  height: 3rem;
+  text-transform: uppercase;
+  font-family: sans-serif;
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: border-color .4s cubic-bezier(.25,.8,.25,1) ,background-color .4s cubic-bezier(.25,.8,.25,1);
+}
+
+.button::-moz-focus-inner {
+  border-style: none;
+  padding: 0;
+}
+
+.button:hover,
+.button:active,
+.button:focus {
+  background-color: hsl(219.6, 20.8%, 83%);
+  color: hsla(0, 0%, 0%, .87);
+  outline: none;
+}
+
+.button:disabled {
+  cursor: default;
+  background-color: hsl(219.6, 20.8%, 83%);
+  color: hsla(0, 0%, 0%, .38);
+}
+
+.button_primary {
+  padding: 0 1rem;
+  border: none;
+  background-color: hsl(219.9, 53.7%, 50%);
+  color: hsl(0, 0%, 100%);
+}
+ 
+.button_primary:hover,
+.button_primary:active,
+.button_primary:focus {
+  background-color: hsl(219.8, 46.4%, 35.1%);
+  color: hsl(0, 0%, 100%);
+}
+
+.button_primary:disabled {
+  background-color: hsl(219.8, 46.4%, 64.9%);
+  color: hsla(0, 0%, 0%, .38);
+}
+
+a.button_link {
+  border-width: 0;
+  border-color: transparent;
+  text-decoration: none;
+  background: none;
+  padding: 0 1rem;
+}
+
+a.button_link:hover,
+a.button_link:active,
+a.button_link:focus {
+  text-decoration: underline;
+  background: none;
+}
+
+a.button_link:focus {
+  border: 2px solid hsl(219.6, 20.8%, 50%);
+  padding: calc(1rem - 2px);
+}
+
+a.button_link:not(:link):not(:visited) {
+  color: hsla(0, 0%, 0%, .38);
+  text-decoration: none;
+  cursor: default;
+}
+
+.button__label {
+  display: inline-flex;
+  font-size: 1em;
+  line-height: 1rem;
+}
+
+.button__icon {
+  display: inline-flex;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-left: .5rem;
+}
+
+.button__icon .icon {
+  height: 100%;
+  width: 100%;
+}
+
+.button_primary .icon {
+  fill: hsl(0, 0%, 100%);
+}
+
+.button_primary:disabled .icon {
+  fill: hsla(0, 0%, 0%, .38);
+}
