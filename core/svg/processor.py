@@ -34,7 +34,17 @@ from django.core.files.base import ContentFile
 
 class SVGIconsProcessor(object):
 	"""
-		Initialized
+		Returns a encapsulated SVG markup using the list of icons needed as parameter
+		The whole markup in an SVG element containing a list of <symbol>s under
+		a <defs> allowing them to be <use>d throuhough the page.
+
+		Internally, this processor will fetch individual icons and strip them of
+		their <svg>, then put each in a <symbol>.
+		Then, this string of <symbol>s will be encapsulated with <svg> and <defs>
+		elements.
+
+		This processor uses some kind of custom file caching
+		as it save a generated <svg> using the SHA256 hash of the input icons
 	"""
 	cache = FileSystemStorage(
 		location=os.path.join(settings.MEDIA_ROOT, 'svg'),
@@ -47,6 +57,11 @@ class SVGIconsProcessor(object):
 		self.icons = icons
 
 	def get(self):
+		"""
+			Create a SHA256 hash of the input parameter.
+			If the corresponding file exists, return its contents,
+			else generate the customized SVG sprite (and save it).
+		"""
 		digest = hashlib.sha256()
 		digest.update(repr(self.icons).encode('utf-8'))
 		hash = digest.hexdigest()
@@ -67,12 +82,20 @@ class SVGIconsProcessor(object):
 			return ''
 
 	def _process(self):
+		"""
+			Fetch the markup for each icon, concatenate and then encapsulate them
+		"""
 		svg_icons_content = ''
 		for icon in self.icons:
 			svg_icons_content += self._get_icon(icon)
 		return self._encapsulate(svg_icons_content)
 
 	def _get_icon(self, name):
+		"""
+			If the icon name exists as an icon,
+			read the corresponding SVG file
+			then strip the <svg> element
+		"""
 		icon_filename = name + self.svg_extension
 
 		path = find_file(os.path.join('core', 'icons', icon_filename))
