@@ -1,18 +1,24 @@
 {% macro ui_button(label, icon, type="button", class=[]) %}
 <button type="{{ type }}" class="button {{ class | join(' ') }}"
 {%- for kwarg in kwargs %} {{ kwarg }}="{{ kwargs[kwarg] }}"{% endfor %}>
-    <span class="button__label">{% trans %}{{ label }}{% endtrans %}</span>
-    {%- if icon %}
-    <span class="button__icon material-icons">{{ icon }}</span>
-    {%- endif %}
+	<span class="button__label">{% trans %}{{ label }}{% endtrans %}</span>
+	{%- if icon %}
+	<span class="button__icon">{{ ui_icon(icon) }}</span>
+	{%- endif %}
 </button>
 {% endmacro %}
 
 {% macro ui_link(label, icon, href='', class=[]) %}
 <a {% if href %}href="{{ href }}" {% endif %}class="button button_link {{ class | join(' ') }}">
 	<span class="button__label">{% trans %}{{ label }}{% endtrans %}</span>
-    {%- if icon %}
-    <span class="button__icon material-icons">{{ icon }}</span>
-    {%- endif %}
+	{%- if icon %}
+	<span class="button__icon">{{ ui_icon(icon) }}</span>
+	{%- endif %}
 </a>
+{% endmacro %}
+
+{% macro ui_icon(name, class=[]) %}
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="ui-icon icon-{{ name }} {{ class | join(' ') }}">
+	<use xlink:href="#icon-{{ name }}"></use>
+</svg>
 {% endmacro %}
