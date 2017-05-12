@@ -7,6 +7,7 @@
 
 {% block content %}
     {{ get_sith().index_page|markdown }}
+    {{ svg_sprites('home') | safe }}
     {{ ui_button("Submit", "home", id='dead', disabled='', class=['primary']) }}
     {{ ui_link("Submit", class=['primary']) }}
     {{ ui_link("Submit", href='#', class=['primary']) }}

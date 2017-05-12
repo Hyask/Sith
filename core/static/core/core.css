@@ -19,6 +19,10 @@ body {
   font-size: .875rem;
 }
 
+.svg-sprites {
+  display: none;
+}
+
 .button-types {
   display: flex;
   align-items: center;
@@ -124,15 +128,18 @@ a.button_link:not(:link):not(:visited) {
   margin-left: .5rem;
 }
 
-.button__icon .icon {
-  height: 100%;
-  width: 100%;
-}
-
-.button_primary .icon {
+.button_primary .ui-icon {
   fill: hsl(0, 0%, 100%);
 }
 
-.button_primary:disabled .icon {
+.button_primary:disabled .ui-icon {
   fill: hsla(0, 0%, 0%, .38);
+}
+
+
+.ui-icon {
+  width: 100%;
+  height: 100%;
+  color: inherit;
+  fill: currentColor;
 }

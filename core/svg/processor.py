@@ -98,7 +98,7 @@ class SVGIconsProcessor(object):
 
 	def _encapsulate(self, svg_icons_content):
 		parts = [
-			'<svg xmlns="http://www.w3.org/2000/svg" class="icon-defs"><defs>',
+			'<svg xmlns="http://www.w3.org/2000/svg" class="svg-sprites"><defs>',
 			svg_icons_content,
 			'</defs></svg>'
 		]
