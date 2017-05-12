@@ -30,7 +30,8 @@ from django.core.files.base import ContentFile
 from django.utils.six.moves.urllib.parse import urljoin
 from django.templatetags.static import static
 from django.conf import settings
-from core.scss.storage import ScssFileStorage, find_file
+from core.scss.storage import ScssFileStorage
+from core.utils import find_file
 
 
 class ScssProcessor(object):

@@ -28,6 +28,7 @@ from io import BytesIO
 from PIL import Image, ExifTags
 # from exceptions import IOError
 import PIL
+from django.contrib.staticfiles.finders import get_finders
 from django.core.files.base import ContentFile
 
 def scale_dimension(width, height, long_edge):
@@ -62,3 +63,10 @@ def exif_auto_rotate(image):
         image=image.rotate(90, expand=True)
 
     return image
+
+
+def find_file(path):
+    for finder in get_finders():
+        result = finder.find(path)
+        if result:
+            return result
