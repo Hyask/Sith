@@ -26,10 +26,10 @@
 from django import template
 from django.template.defaultfilters import stringfilter
 from django.utils.safestring import mark_safe
-from core.scss.processor import ScssProcessor
-from django.utils.html import escape
 
 from core.markdown import markdown as md
+from core.scss.processor import ScssProcessor
+from core.svg.processor import SVGIconsProcessor
 
 register = template.Library()
 
@@ -58,3 +58,12 @@ def scss(path):
     """
     processor = ScssProcessor(path)
     return processor.get_converted_scss()
+
+
+def svg_sprites(*icons):
+    """
+        Encapsulate a list of svg icons into a svg DOM using <symbol>s
+         for the icons to be <use>d later in the document.
+        Returns an inline version of the svg DOM
+    """
+    return SVGIconsProcessor(list(icons)).get()

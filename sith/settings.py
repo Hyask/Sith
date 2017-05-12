@@ -149,6 +149,7 @@ TEMPLATES = [
                 "timezone": "django.utils.timezone",
                 "get_sith": "com.views.sith",
                 "scss": "core.templatetags.renderer.scss",
+                "svg_sprites": "core.templatetags.renderer.svg_sprites",
             },
             "bytecode_cache": {
                 "name": "default",
