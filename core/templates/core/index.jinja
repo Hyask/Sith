@@ -7,7 +7,7 @@
 
 {% block content %}
     {{ get_sith().index_page|markdown }}
-    {{ svg_sprites('home', 'send') | safe }}
+    {{ svg_sprites('home', 'send') }}
     {{ ui_button("Submit", "home", class=['primary']) }}
     {{ ui_link("Submit", 'send', class=['primary']) }}
     {{ ui_link("Submit", 'send', href='#', class=['primary']) }}

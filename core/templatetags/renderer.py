@@ -31,6 +31,8 @@ from core.markdown import markdown as md
 from core.scss.processor import ScssProcessor
 from core.svg.processor import SVGIconsProcessor
 
+from jinja2 import Markup
+
 register = template.Library()
 
 @register.filter(is_safe=False)
@@ -66,4 +68,4 @@ def svg_sprites(*icons):
          for the icons to be <use>d later in the document.
         Returns an inline version of the svg DOM
     """
-    return SVGIconsProcessor(list(icons)).get()
+    return Markup(SVGIconsProcessor(list(icons)).get())
