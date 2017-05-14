@@ -1,5 +1,5 @@
 {% extends "core/base.jinja" %}
-{% from "core/ui_macros.jinja" import ui_button, ui_link %}
+{% from "core/ui_macros.jinja" import ui_button, ui_link, ui_text_field, ui_select %}
 
 {% block title %}
 {% trans %}Welcome!{% endtrans %}
@@ -11,4 +11,10 @@
     {{ ui_button("Submit", "home", class=['primary']) }}
     {{ ui_link("Submit", 'send', class=['primary']) }}
     {{ ui_link("Submit", 'send', href='#', class=['primary']) }}
+    <div>
+    	{{ ui_text_field('email', 'Enter email', 'arnold@example.com', type='email') }}
+    </div>
+    <div>
+    	{{ ui_select('select-name', 'Select this', options=[(1, 'things'), (2, 'gloobies'), (3, 'stuff')]) }}
+    </div>
 {% endblock %}

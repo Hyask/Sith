@@ -23,7 +23,7 @@ body {
   display: none;
 }
 
-.button {  
+.ui-button {  
   background-color: hsl(219.6, 20.8%, 98%);
   color: hsla(0, 0%, 0%, .87);
   
@@ -45,45 +45,45 @@ body {
   transition: border-color .4s cubic-bezier(.25,.8,.25,1) ,background-color .4s cubic-bezier(.25,.8,.25,1);
 }
 
-.button::-moz-focus-inner {
+.ui-button::-moz-focus-inner {
   border-style: none;
   padding: 0;
 }
 
-.button:hover,
-.button:active,
-.button:focus {
+.ui-button:hover,
+.ui-button:active,
+.ui-button:focus {
   background-color: hsl(219.6, 20.8%, 83%);
   color: hsla(0, 0%, 0%, .87);
   outline: none;
 }
 
-.button:disabled {
+.ui-button:disabled {
   cursor: default;
   background-color: hsl(219.6, 20.8%, 83%);
   color: hsla(0, 0%, 0%, .38);
 }
 
-.button_primary {
+.ui-button_primary {
   padding: 0 1rem;
   border: none;
   background-color: hsl(219.9, 53.7%, 50%);
   color: hsl(0, 0%, 100%);
 }
  
-.button_primary:hover,
-.button_primary:active,
-.button_primary:focus {
+.ui-button_primary:hover,
+.ui-button_primary:active,
+.ui-button_primary:focus {
   background-color: hsl(219.8, 46.4%, 35.1%);
   color: hsl(0, 0%, 100%);
 }
 
-.button_primary:disabled {
+.ui-button_primary:disabled {
   background-color: hsl(219.8, 46.4%, 64.9%);
   color: hsla(0, 0%, 0%, .38);
 }
 
-a.button_link {
+a.ui-button_link {
   border-width: 0;
   border-color: transparent;
   text-decoration: none;
@@ -91,42 +91,42 @@ a.button_link {
   padding: 0 1rem;
 }
 
-a.button_link:hover,
-a.button_link:active,
-a.button_link:focus {
+a.ui-button_link:hover,
+a.ui-button_link:active,
+a.ui-button_link:focus {
   text-decoration: underline;
   background: none;
 }
 
-a.button_link:focus {
+a.ui-button_link:focus {
   border: 2px solid hsl(219.6, 20.8%, 50%);
   padding: calc(1rem - 2px);
 }
 
-a.button_link:not(:link):not(:visited) {
+a.ui-button_link:not(:link):not(:visited) {
   color: hsla(0, 0%, 0%, .38);
   text-decoration: none;
   cursor: default;
 }
 
-.button__label {
+.ui-button__label {
   display: inline-flex;
   font-size: 1em;
   line-height: 1rem;
 }
 
-.button__icon {
+.ui-button__icon {
   display: inline-flex;
   width: 1.5rem;
   height: 1.5rem;
   margin-left: .5rem;
 }
 
-.button_primary .ui-icon {
+.ui-button_primary .ui-icon {
   fill: hsl(0, 0%, 100%);
 }
 
-.button_primary:disabled .ui-icon {
+.ui-button_primary:disabled .ui-icon {
   fill: hsla(0, 0%, 0%, .38);
 }
 
@@ -136,4 +136,107 @@ a.button_link:not(:link):not(:visited) {
   height: 100%;
   color: inherit;
   fill: currentColor;
+}
+
+.ui-text-field {
+  position:  relative;
+  margin: 1rem 0;
+}
+
+.ui-text-field__input {
+  background: transparent;
+  border: none;
+  height: 2rem;
+  width: 100%;
+  font-size: 1em;
+  padding: 0;
+  border-bottom: 1px solid blue;
+  margin-bottom: 1px;
+  box-sizing: initial;
+}
+
+.ui-text-field__input:focus {
+  outline: none;
+  border-width: 2px;
+  margin-bottom: 0;
+}
+
+.ui-text-field__label {
+  text-overflow: ellipsis;
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: text;
+
+  transform-origin: left;
+  position: absolute;
+  top: .5rem;
+  transition: opacity .25s cubic-bezier(0,0,.3,1), transform .25s cubic-bezier(0,0,.3,1);
+}
+
+.ui-text-field__input:focus + .ui-text-field__label {
+  transform: translateY(-1.15rem) scale(.8);
+}
+
+.ui-text-field__input:not(:focus):not([value='']) + .ui-text-field__label {
+  opacity: 0;
+  transform: translateY(-1.15rem) scale(.8);
+}
+
+.ui-text-field__messages {
+  margin-top: .5rem;
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.ui-text-field__message {
+  font-size: .75em;
+  margin-top: .25rem;
+  color: hsla(0, 0%, 0%, .54);
+}
+
+.ui-text-field__message:first-child {
+  margin-top: 0;
+}
+
+.ui-text-field__message_error {
+  color: #F44336;
+}
+
+.ui-select {
+  position: relative;
+  margin: 1rem 0;
+}
+
+.ui-select__dropdown {
+    border: none;
+    border-bottom: 1px solid blue;
+    background-color: transparent;
+    width: 100%;
+    cursor: pointer;
+    font-size: 1em;
+    height: 2rem;
+}
+
+.ui-select__label {
+  pointer-events: none;
+  text-overflow: ellipsis;
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: text;
+
+  transform-origin: left;
+  position: absolute;
+  top: .5rem;
+  transition: opacity .25s cubic-bezier(0,0,.3,1), transform .25s cubic-bezier(0,0,.3,1);
+}
+
+.ui-select__dropdown:focus + .ui-select__label {
+  transform: translateY(-1.15rem) scale(.8);
+}
+
+.ui-select__dropdown:not(:focus):not([value='']) + .ui-select__label {
+  opacity: 0;
+  transform: translateY(-1.15rem) scale(.8);
 }

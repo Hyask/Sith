@@ -27,3 +27,78 @@
 	<use xlink:href="#icon-{{ name }}"></use>
 </svg>
 {%- endmacro %}
+
+{#  #}
+{% macro ui_text_field(name, label, value, type='text', class=[]) -%}
+{% set id = random_id() %}
+<div class="ui-text-field">
+	<input type="{{ type }}" name="{{ name }}" value="{{ value or '' }}" id="{{ id }}" class="ui-text-field__input" oninput="this.setAttribute('value', this.value)" {# ugly and only hack to handle value attribute from CSS #}>
+	<label class="ui-text-field__label" for="{{ id }}">{{ label }}</label>
+	<div class="ui-text-field__messages">
+		<span class="ui-text-field__message ui-text-field__message_error">Error message</span>
+		<span class="ui-text-field__message ui-text-field__message_hint">Hint message</span>
+	</div>
+</div>
+{%- endmacro %}
+
+{#  #}
+{% macro ui_select(name, label='', value='', class=[], options=[]) -%}
+{% set id = random_id() %}
+<div class="ui-select">
+	<select class="ui-select__dropdown" value="{{ value or '' }}" id="{{ id }}" onchange="this.setAttribute('value', this.value)">
+		<option class="ui-select__option" value=""></option>
+	{% for option in options -%}
+		<option class="ui-select__option" value="{{ option[0] }}">{{ option[1] }}</option>
+	{% endfor -%}
+	</select>
+	<label class="ui-select__label" for="{{ id }}">{{ label }}</label>
+</div>
+{%- endmacro %}
+
+{# ,#}
+{% macro ui_checkbox(name, state, class=[]) -%}
+
+{%- endmacro %}
+
+{% macro ui_list() -%}
+
+{%- endmacro %}
+
+{# ,#}
+{% macro ui_progress() -%}
+
+{%- endmacro %}
+
+{# ,#}
+{% macro ui_sidenav() -%}
+
+{%- endmacro %}
+
+{# ,#}
+{% macro ui_radio() -%}
+
+{%- endmacro %}
+
+{# ,#}
+{% macro ui_navbar() -%}
+
+{%- endmacro %}
+
+{# ,#}
+{% macro ui_slider() -%}
+
+{%- endmacro %}
+
+{# ,#}
+{% macro ui_tabs() -%}
+
+{%- endmacro %}
+
+{% macro random_id() -%}
+{%- for i in range(4) -%}
+	{%- for j in range(5) -%}
+		{{ range(10) | random }}
+	{%- endfor -%}
+	{% if not loop.last %}-{% endif %}
+{%- endfor -%}
+{%- endmacro %}
