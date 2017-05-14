@@ -1,24 +1,29 @@
-{% macro ui_button(label, icon, type="button", class=[]) %}
-<button type="{{ type }}" class="button {{ class | join(' ') }}"
+{#  #}
+{% macro ui_button(label, icon, type="button", class=[], icon_class=[]) -%}
+<button type="{{ type }}" class="ui-button {{ class | join(' ') }}"
 {%- for kwarg in kwargs %} {{ kwarg }}="{{ kwargs[kwarg] }}"{% endfor %}>
-	<span class="button__label">{% trans %}{{ label }}{% endtrans %}</span>
-	{%- if icon %}
-	<span class="button__icon">{{ ui_icon(icon) }}</span>
-	{%- endif %}
+{{ _ui_link_button_inner(label, icon, icon_class) }}
 </button>
-{% endmacro %}
+{%- endmacro %}
 
-{% macro ui_link(label, icon, href='', class=[]) %}
-<a {% if href %}href="{{ href }}" {% endif %}class="button button_link {{ class | join(' ') }}">
-	<span class="button__label">{% trans %}{{ label }}{% endtrans %}</span>
-	{%- if icon %}
-	<span class="button__icon">{{ ui_icon(icon) }}</span>
-	{%- endif %}
+{#  #}
+{% macro ui_link(label, icon, href='', class=[], icon_class=[]) -%}
+<a {% if href %}href="{{ href }}" {% endif %}class="ui-button ui-button_link {{ class | join(' ') }}">
+{{ _ui_link_button_inner(label, icon, icon_class) }}
 </a>
-{% endmacro %}
+{%- endmacro %}
 
-{% macro ui_icon(name, class=[]) %}
+{#  #}
+{% macro _ui_link_button_inner(label, icon, icon_class=[]) -%}
+<span class="ui-button__label">{% trans %}{{ label }}{% endtrans %}</span>
+{%- if icon %}
+<span class="ui-button__icon">{{ ui_icon(icon, icon_class) }}</span>
+{%- endif %}
+{%- endmacro %}
+
+{#  #}
+{% macro ui_icon(name, class=[]) -%}
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="ui-icon icon-{{ name }} {{ class | join(' ') }}">
 	<use xlink:href="#icon-{{ name }}"></use>
 </svg>
-{% endmacro %}
+{%- endmacro %}
