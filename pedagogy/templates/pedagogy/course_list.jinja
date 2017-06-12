@@ -1,0 +1,17 @@
+{% extends "core/base.jinja" %}
+
+{% block title %}
+{% trans %}List of subjects{% endtrans %}
+{% endblock %}
+
+{% block content %}
+<h3>{% trans %}List of subjects{% endtrans %}</h3>
+<ul>
+{% for s in course_list %}
+<li><a href="{{ url('pedagogy:course_detail', course_id=s.id) }}">{{ s.name }}</a></li>
+{% endfor %}
+</ul>
+
+<a href="{{ url('pedagogy:create') }}">{% trans %}New course{% endtrans %}</a>
+
+{% endblock %}

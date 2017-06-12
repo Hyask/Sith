@@ -1,0 +1,47 @@
+{% extends "core/base.jinja" %}
+
+{% block title %}
+{{ course.code }} - {{ course.name }}
+{% endblock %}
+
+{% block content %}
+<h3>{% trans %}Subject : {% endtrans %} {{ course.name }}</h3>
+<ul>
+<li>{{ course.code }}</li>
+<li>{{ course.formation }}</li>
+<li>{{ course.category }}</li>
+<li>{{ course.semester }}</li>
+</ul>
+
+<h3>{% trans %}Comments{% endtrans %}</h3>
+{% for c in comments %}
+<ul>
+	<li>{{ c.author }}</li>
+	<li>{{ c.comment }}</li>
+	<table>
+		<tbody>
+			<tr>
+				<td>{% trans %}Interest{% endtrans %}</td>
+				<td>{{ c.STARS[c.interest][1] }}</td>
+			</tr>
+			<tr>
+				<td>{% trans %}Utility{% endtrans %}</td>
+				<td>{{ c.STARS[c.utility][1] }}</td>
+			</tr>
+			<tr>
+				<td>{% trans %}Work{% endtrans %}</td>
+				<td>{{ c.STARS[c.work][1] }}</td>
+			</tr>
+			<tr>
+				<td>{% trans %}Teaching{% endtrans %}</td>
+				<td>{{ c.STARS[c.teaching][1] }}</td>
+			</tr>
+			<tr>
+				<td><strong>{% trans %}Global mark{% endtrans %}</strong></td>
+				<td>{{ c.STARS[c.global_mark][1] }}</td>
+			</tr>
+		</tbody>
+	</table>
+</ul>
+{% endfor %}
+{% endblock %}

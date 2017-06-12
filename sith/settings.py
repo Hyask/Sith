@@ -90,6 +90,7 @@ INSTALLED_APPS = (
     'stock',
     'trombi',
     'matmat',
+    'pedagogy',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -597,6 +598,27 @@ SITH_MAILING_FETCH_KEY = 'IloveMails'
 SITH_GIFT_LIST = [
     ('AE Tee-shirt', _("AE tee-shirt"))
 ]
+
+SCHOOL_CATEGORIES = {
+    'CS': _('Science Knowledge'),
+    'TM': _('Tech and Method'),
+    'QC': _('Ask and Create'),
+    'EC': _('Expression and Communication'),
+    'OM': _('Organize and Manage'),
+}
+
+SCHOOL_FORMATIONS = {
+    'TC': _('Common Core'),
+    'INFO': _('Computer Science'),
+    'GMC': _('Mechanical and Conception'),
+    'EDIM': _('Mechanical and Conception'),
+    'IMSI': _('POUSSE CARTON'),
+    'EE': _('Powering'),
+}
+SCHOOL_YEAR_PARTS = {
+    'S': _('Spring'),
+    'A': _('Autumn'),
+}
 
 try:
     from .settings_custom import *
