@@ -277,6 +277,7 @@ class NewsAdminListView(CanEditMixin, ListView):
 class NewsListView(CanViewMixin, ListView):
     model = News
     template_name = 'com/news_list.jinja'
+    queryset = News.objects.filter(is_moderated=True)
 
     def get_context_data(self, **kwargs):
         kwargs = super(NewsListView, self).get_context_data(**kwargs)
