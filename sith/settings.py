@@ -74,6 +74,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'ajax_select',
     'haystack',
+    'captcha',
     'core',
     'club',
     'subscription',
@@ -625,3 +626,4 @@ if DEBUG:
     SASS_INCLUDE_FOLDERS = [
         'core/static/',
     ]
+    CAPTCHA_TEST_MODE = True
