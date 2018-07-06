@@ -200,6 +200,8 @@ class UserRegistrationTest(TestCase):
                                           'date_of_birth': '12/6/1942',
                                           'password1': 'plop',
                                           'password2': 'plop',
+                                          'captcha_0': 'dummy-value',
+                                          'captcha_1': 'PASSED'
                                           })
         response = c.post(reverse('core:login'), {'username': 'gcarlier', 'password': 'plop'})
         self.assertTrue(response.status_code == 302)
@@ -216,6 +218,8 @@ class UserRegistrationTest(TestCase):
                                           'date_of_birth': '12/6/1942',
                                           'password1': 'plop',
                                           'password2': 'plop',
+                                          'captcha_0': 'dummy-value',
+                                          'captcha_1': 'PASSED'
                                           })
         response = c.post(reverse('core:login'), {'username': 'gcarlier', 'password': 'guy'})
         self.assertTrue(response.status_code == 200)
