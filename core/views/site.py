@@ -92,6 +92,10 @@ def search_view(request):
         'users': search_user(request.GET.get('query', '')),
         'clubs': search_club(request.GET.get('query', '')),
     }
+    # If the search result is only one user, redirect to their profile
+    if len(result['users']) == 1 and len(result['clubs']) == 0:
+        return redirect('core:user_profile', user_id=result['users'][0].id)
+
     return render(request, "core/search.jinja", context={'result': result})
 
 
