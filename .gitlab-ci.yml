@@ -16,8 +16,9 @@ test:
     paths:
       - coverage_report/
 
-black:
+linting:
   stage: test
   script:
-    - pip install black
+    - pip install black flake8
     - black --check .
+    - flake8 .
