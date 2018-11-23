@@ -88,6 +88,28 @@ Si vous utilisez le plugin [anaconda](http://damnwidget.github.io/anaconda/), pe
 }
 ```
 
+# Python Language Server
+
+Le Language Server Protocol est utilisé pour intégrer des fonctionnalités telles que la saisie semi-automatique, la définition, la recherche de toutes les références et autres dans l'IDE.
+
+Installation du LSP serveur:
+
+```bash
+    pip install python-language-server
+```
+## Sous VsCode
+
+Attention, pour VsCode, le LSP serveur doit être installé dans votre virtualenv !
+Ajouter ces trois lignes dans les settings de VsCode
+
+```json
+{
+    "python.linting.pylintEnabled": false,
+    "python.linting.pydocstyleEnabled": true,
+    "python.linting.enabled": true, 
+}
+```
+
 Sites et doc cools
 ------------------
 
