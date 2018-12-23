@@ -350,20 +350,6 @@ Welcome to the wiki page!
                 Group.objects.filter(name=settings.SITH_MAIN_MEMBERS_GROUP).first().id
             ]
             r.save()
-            # Adding user Ame
-            ame = User(
-                username="ame",
-                last_name="m",
-                first_name="Ame",
-                email="ame@git.an",
-                date_of_birth="1997-06-12",
-            )
-            ame.set_password("plop")
-            ame.save()
-            ame.view_groups = [
-                Group.objects.filter(name=settings.SITH_MAIN_MEMBERS_GROUP).first().id
-            ]
-            ame.save()
             # Adding syntax help page
             p = Page(name="Aide_sur_la_syntaxe")
             p.save(force_lock=True)
@@ -459,18 +445,6 @@ Welcome to the wiki page!
                 start=s.subscription_start,
             )
             s.save()
-            # Ame
-            s = Subscription(
-                member=User.objects.filter(pk=ame.pk).first(),
-                subscription_type=default_subscription,
-                payment_method=settings.SITH_SUBSCRIPTION_PAYMENT_METHOD[0][0],
-            )
-            s.subscription_start = s.compute_start()
-            s.subscription_end = s.compute_end(
-                duration=settings.SITH_SUBSCRIPTIONS[s.subscription_type]["duration"],
-                start=s.subscription_start,
-            )
-            s.save()
             # User
             s = Subscription(
                 member=User.objects.filter(pk=subscriber.pk).first(),
@@ -521,7 +495,6 @@ Welcome to the wiki page!
                 parent=main_club,
             )
             troll.save()
-            Membership(user=ame, club=troll, role=10, description="").save()
             refound = Club(
                 name="Carte AE",
                 unix_name="carte_ae",
@@ -864,6 +837,27 @@ Welcome to the wiki page!
                 krophil_profile.save()
                 krophil.profile_pict = krophil_profile
                 krophil.save()
+            # Adding user Ame
+            ame = User(
+                username="ame",
+                last_name="m",
+                first_name="Ame",
+                email="ame@git.an",
+                date_of_birth="1997-06-12",
+            )
+            ame.set_password("plop")
+            ame.save()
+            ame.view_groups = [
+                Group.objects.filter(name=settings.SITH_MAIN_MEMBERS_GROUP).first().id
+            ]
+            ame.save()
+            # Membership Ame
+            Membership(
+                user=ame,
+                club=troll,
+                role=settings.SITH_CLUB_ROLES_ID["President"],
+                description="",
+            ).save()
             # Adding subscription for sli
             s = Subscription(
                 member=User.objects.filter(pk=sli.pk).first(),
@@ -880,6 +874,18 @@ Welcome to the wiki page!
             s = Subscription(
                 member=User.objects.filter(pk=krophil.pk).first(),
                 subscription_type=list(settings.SITH_SUBSCRIPTIONS.keys())[0],
+                payment_method=settings.SITH_SUBSCRIPTION_PAYMENT_METHOD[0][0],
+            )
+            s.subscription_start = s.compute_start()
+            s.subscription_end = s.compute_end(
+                duration=settings.SITH_SUBSCRIPTIONS[s.subscription_type]["duration"],
+                start=s.subscription_start,
+            )
+            s.save()
+            # Subscription Ame
+            s = Subscription(
+                member=User.objects.filter(pk=ame.pk).first(),
+                subscription_type=default_subscription,
                 payment_method=settings.SITH_SUBSCRIPTION_PAYMENT_METHOD[0][0],
             )
             s.subscription_start = s.compute_start()

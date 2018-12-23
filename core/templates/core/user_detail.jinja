@@ -111,7 +111,7 @@
         </div>
     </div>
 
-    {% if user.is_root or user.is_club_supervisor or user.is_in_group(settings.SITH_MAIN_BOARD_GROUP) or user == profile or user.is_in_group(settings.SITH_BAR_MANAGER_BOARD_GROUP) %}
+    {% if user.is_root or user.is_club_supervisor or user.is_board_member or user == profile or user.is_in_group(settings.SITH_BAR_MANAGER_BOARD_GROUP) %}
     {# if the user is member of a club, he can view the subscription state #}
     <hr>
     {% if profile.is_subscribed %}
