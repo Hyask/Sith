@@ -604,7 +604,7 @@ class User(AbstractBaseUser):
         return (
             (user.was_subscribed and self.is_subscriber_viewable)
             or user.is_root
-            or user.is_board_member
+            or user.is_club_supervisor
         )
 
     def get_mini_item(self):
@@ -661,6 +661,12 @@ class User(AbstractBaseUser):
     def is_com_admin(self):
         return self.is_in_group(settings.SITH_GROUP_COM_ADMIN_ID)
 
+    @cached_property
+    def is_club_supervisor(self):
+        return self.memberships.filter(
+            end_date=None, role__gt=settings.SITH_MAXIMUM_FREE_ROLE
+        ).exists()
+
 
 class AnonymousUser(AuthAnonymousUser):
     def __init__(self, request):
@@ -696,6 +702,10 @@ class AnonymousUser(AuthAnonymousUser):
 
     @property
     def is_banned_counter(self):
+        return False
+
+    @property
+    def is_club_supervisor(self):
         return False
 
     @property
