@@ -115,7 +115,7 @@ class BarmanConnectionTest(TestCase):
         )
 
         self.assertTrue(
-            '<li><a href="/user/10/">Kro Phil&#39;</a></li>'
+            '<li><a href="/user/11/">Kro Phil&#39;</a></li>'
             in str(response_get.content)
         )
 
