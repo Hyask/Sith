@@ -93,6 +93,7 @@ INSTALLED_APPS = (
     "stock",
     "trombi",
     "matmat",
+    "sitemanagement",
 )
 
 MIDDLEWARE_CLASSES = (
@@ -324,6 +325,7 @@ SITH_GROUP_BANNED_COUNTER_ID = 9
 SITH_GROUP_BANNED_SUBSCRIPTION_ID = 10
 SITH_GROUP_SAS_ADMIN_ID = 11
 SITH_GROUP_FORUM_ADMIN_ID = 12
+SITH_GROUP_SITE_MANAGEMENT_ID = 13
 
 
 SITH_CLUB_REFOUND_ID = 89
@@ -404,6 +406,14 @@ SITH_COUNTER_BANK = [
     ("CREDIT-MUTUEL", "Credit Mutuel"),
     ("CREDIT-LYONNAIS", "Credit Lyonnais"),
     ("LA-POSTE", "La Poste"),
+]
+
+SITH_WORKING_CONDITION = [
+    ("BRAND_NEW", _("Brand new")),
+    ("ALMOST_NEW", _("Almost new")),
+    ("GOOD", _("Good condition")),
+    ("MEDIUM", _("Medium condition")),
+    ("WORN", _("Worn")),
 ]
 
 SITH_ECOCUP_CONS = 1152

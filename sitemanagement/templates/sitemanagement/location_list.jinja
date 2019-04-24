@@ -1,0 +1,22 @@
+{% extends "core/base.jinja" %}
+
+{% block title %}
+{% trans %}Counter admin list{% endtrans %}
+{% endblock %}
+
+{% block content %}
+<p><a href="{{ url('sitemanagement:new_location') }}">{% trans %}New location{% endtrans %}</a></p>
+{% if location_list %}
+<ul>
+    {% for c in location_list.order_by('name')  %}
+    <li>
+    {{ c }}
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+{% trans %}There is no locations in this website.{% endtrans %}
+{% endif %}
+{% endblock %}
+
+

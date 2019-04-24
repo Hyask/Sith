@@ -81,6 +81,7 @@ urlpatterns = [
     ),
     url(r"^forum/", include("forum.urls", namespace="forum", app_name="forum")),
     url(r"^trombi/", include("trombi.urls", namespace="trombi", app_name="trombi")),
+    url(r"^sitemanagement/", include("sitemanagement.urls", namespace="sitemanagement", app_name="sitemanagement")),
     url(
         r"^matmatronch/", include("matmat.urls", namespace="matmat", app_name="matmat")
     ),
