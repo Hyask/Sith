@@ -72,6 +72,7 @@ class PosterForm(forms.ModelForm):
             "display_time",
         ]
         widgets = {"screens": forms.CheckboxSelectMultiple}
+        help_texts = {"file": _("Format: 16:9 | Resolution: 1920x1080")}
 
     date_begin = forms.DateTimeField(
         ["%Y-%m-%d %H:%M:%S"],

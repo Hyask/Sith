@@ -769,7 +769,9 @@ msgid "Linked operation:"
 msgstr "Opération liée : "
 
 #: accounting/templates/accounting/operation_edit.jinja:55
-#: com/templates/com/news_edit.jinja:57 com/templates/com/poster_edit.jinja:33
+#: com/templates/com/news_edit.jinja:57
+#: com/templates/com/poster_create.jinja:12
+#: com/templates/com/poster_edit.jinja:33
 #: com/templates/com/screen_edit.jinja:25 com/templates/com/weekmail.jinja:74
 #: core/templates/core/create.jinja:12 core/templates/core/edit.jinja:7
 #: core/templates/core/edit.jinja:15 core/templates/core/edit.jinja:20
@@ -1365,7 +1367,7 @@ msgstr "Éditer la page de club"
 msgid "Mailing list"
 msgstr "Listes de diffusion"
 
-#: club/views.py:160 com/views.py:141
+#: club/views.py:160 com/views.py:142
 msgid "Posters list"
 msgstr "Liste d'affiches"
 
@@ -1488,7 +1490,7 @@ msgstr "temps d'affichage"
 msgid "Begin date should be before end date"
 msgstr "La date de début doit être avant celle de fin"
 
-#: com/templates/com/mailing_admin.jinja:4 com/views.py:134
+#: com/templates/com/mailing_admin.jinja:4 com/views.py:135
 #: core/templates/core/user_tools.jinja:90
 msgid "Mailing lists administration"
 msgstr "Administration des mailing listes"
@@ -1730,6 +1732,13 @@ msgstr "Rien à venir..."
 msgid "Coming soon... don't miss!"
 msgstr "Prochainement... à ne pas rater!"
 
+#: com/templates/com/poster_create.jinja:4
+#: com/templates/com/poster_create.jinja:8 core/templates/core/create.jinja:4
+#: core/templates/core/create.jinja:8
+#, python-format
+msgid "Create %(name)s"
+msgstr "Créer %(name)s"
+
 #: com/templates/com/poster_edit.jinja:4 com/templates/com/poster_list.jinja:10
 #: core/templates/core/poster_list.jinja:10
 msgid "Poster"
@@ -1795,7 +1804,7 @@ msgid "Slideshow"
 msgstr "Diaporama"
 
 #: com/templates/com/weekmail.jinja:5 com/templates/com/weekmail.jinja:9
-#: com/views.py:108 core/templates/core/user_tools.jinja:82
+#: com/views.py:109 core/templates/core/user_tools.jinja:82
 msgid "Weekmail"
 msgstr "Weekmail"
 
@@ -1882,60 +1891,64 @@ msgstr "Astuce"
 msgid "Final word"
 msgstr "Le mot de la fin"
 
-#: com/views.py:78 com/views.py:215 election/views.py:185
+#: com/views.py:75
+msgid "Format: 16:9 | Resolution: 1920x1080"
+msgstr "Format: 16:9 | Résolution: 1920x1080"
+
+#: com/views.py:79 com/views.py:216 election/views.py:185
 #: subscription/views.py:46
 msgid "Start date"
 msgstr "Date de début"
 
-#: com/views.py:103
+#: com/views.py:104
 msgid "Communication administration"
 msgstr "Administration de la communication"
 
-#: com/views.py:114 core/templates/core/user_tools.jinja:83
+#: com/views.py:115 core/templates/core/user_tools.jinja:83
 msgid "Weekmail destinations"
 msgstr "Destinataires du Weekmail"
 
-#: com/views.py:118
+#: com/views.py:119
 msgid "Index page"
 msgstr "Page d'accueil"
 
-#: com/views.py:121
+#: com/views.py:122
 msgid "Info message"
 msgstr "Message d'info"
 
-#: com/views.py:127
+#: com/views.py:128
 msgid "Alert message"
 msgstr "Message d'alerte"
 
-#: com/views.py:148
+#: com/views.py:149
 msgid "Screens list"
 msgstr "Liste d'écrans"
 
-#: com/views.py:226
+#: com/views.py:227
 msgid "Until"
 msgstr "Jusqu'à"
 
-#: com/views.py:228
+#: com/views.py:229
 msgid "Automoderation"
 msgstr "Automodération"
 
-#: com/views.py:235 com/views.py:239 com/views.py:249
+#: com/views.py:236 com/views.py:240 com/views.py:250
 msgid "This field is required."
 msgstr "Ce champ est obligatoire."
 
-#: com/views.py:245
+#: com/views.py:246
 msgid "You crazy? You can not finish an event before starting it."
 msgstr "T'es fou? Un événement ne peut pas finir avant même de commencer."
 
-#: com/views.py:474
+#: com/views.py:475
 msgid "Delete and save to regenerate"
 msgstr "Supprimer et sauver pour regénérer"
 
-#: com/views.py:489
+#: com/views.py:490
 msgid "Weekmail of the "
 msgstr "Weekmail du "
 
-#: com/views.py:599
+#: com/views.py:600
 msgid ""
 "You must be a board member of the selected club to post in the Weekmail."
 msgstr ""
@@ -2534,11 +2547,6 @@ msgstr "R&D"
 #: core/templates/core/base.jinja:254
 msgid "Site made by good people"
 msgstr "Site réalisé par des gens bons"
-
-#: core/templates/core/create.jinja:4 core/templates/core/create.jinja:8
-#, python-format
-msgid "Create %(name)s"
-msgstr "Créer %(name)s"
 
 #: core/templates/core/delete_confirm.jinja:4
 #: core/templates/core/delete_confirm.jinja:8
