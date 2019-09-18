@@ -114,25 +114,32 @@
 {% endmacro %}
 
 {% macro paginate(page_obj, paginator) %}
+    <div id="pagination">
+    <form>
     {% if page_obj.has_previous() or page_obj.has_next() %}
         {% if page_obj.has_previous() %}
-            <a href="?page={{ page_obj.previous_page_number() }}">{% trans %}Previous{% endtrans %}</a>
+            <input type="button" value="{% trans %}Previous{% endtrans %}" onclick="window.location.href='?page={{ page_obj.previous_page_number() }}'">
         {% else %}
-            <span class="disabled">{% trans %}Previous{% endtrans %}</span>
+            <input type="button" value="{% trans %}Previous{% endtrans %}" disabled>
         {% endif %}
         {% for i in paginator.page_range %}
             {% if page_obj.number == i %}
-                <span class="active">{{ i }} <span class="sr-only">({% trans %}current{% endtrans %})</span></span>
-            {% else %}
-                <a href="?page={{ i }}">{{ i }}</a>
+                <input type="button" value="{{ i }}" class="current" disabled>
+            {% elif (i <= 2 + page_obj.number and i >= page_obj.number - 2) or paginator.num_pages == i or i == 1 %}
+                <input type="button" value="{{ i }}" onclick="window.location.href='?page={{ i }}'" >
+            {% endif %}
+            {% if (i == 1 or paginator.num_pages -1 == i) and (page_obj.number - i > 3 or page_obj.number - i < -2) %}
+                <input type="button" value="..." disabled>
             {% endif %}
         {% endfor %}
         {% if page_obj.has_next() %}
-            <a href="?page={{ page_obj.next_page_number() }}">{% trans %}Next{% endtrans %}</a>
+            <input type="button" value="{% trans %}Next{% endtrans %}" onclick="window.location.href='?page={{ page_obj.next_page_number() }}'">
         {% else %}
-            <span class="disabled">{% trans %}Next{% endtrans %}</span>
+            <input type="button" value="{% trans %}Next{% endtrans %}" disabled>
         {% endif %}
     {% endif %}
+    </form>
+    </div>
 {% endmacro %}
 
 {% macro select_all_checkbox(form_id) %}
