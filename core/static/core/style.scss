@@ -1541,7 +1541,7 @@ textarea {
   text-align: center;
   input {
     text-decoration: none;
-    background-color: #aed6f1;
+    background-color: #e6e6e6;
     padding: 15px;
     float: none;
     color: darkslategray;
@@ -1550,13 +1550,18 @@ textarea {
     transition-duration: 0.3s;
     cursor: pointer;
     &:hover {
-      background-color: #3498DB;
+      background-color: #c9c9c9;
+    }
+    &:disabled {
+      background-color: #c9c9c9;
+      color: slategray;
+      &.current {
+        background-color: rgb(82, 186, 255);
+      }
     }
   }
-  .current {
-    background-color: #3498DB;
-  }
 }
+
 
 /*--------------------------------FOOTER-------------------------------*/
 

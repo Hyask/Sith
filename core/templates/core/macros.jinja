@@ -124,7 +124,7 @@
         {% endif %}
         {% for i in paginator.page_range %}
             {% if page_obj.number == i %}
-                <input type="button" value="{{ i }}" class="current" disabled>
+                <input type="button" value="{{ i }}" disabled class="current">
             {% elif (i <= 2 + page_obj.number and i >= page_obj.number - 2) or paginator.num_pages == i or i == 1 %}
                 <input type="button" value="{{ i }}" onclick="window.location.href='?page={{ i }}'" >
             {% endif %}
