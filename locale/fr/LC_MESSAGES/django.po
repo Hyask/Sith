@@ -41,7 +41,7 @@ msgstr "code postal"
 msgid "country"
 msgstr "pays"
 
-#: accounting/models.py:66 core/models.py:258
+#: accounting/models.py:66 core/models.py:259
 msgid "phone"
 msgstr "téléphone"
 
@@ -2067,75 +2067,75 @@ msgstr "Homme"
 msgid "Woman"
 msgstr "Femme"
 
-#: core/models.py:209
+#: core/models.py:210
 msgid "tshirt size"
 msgstr "taille de tshirt"
 
-#: core/models.py:212
+#: core/models.py:213
 msgid "-"
 msgstr "-"
 
-#: core/models.py:213
+#: core/models.py:214
 msgid "XS"
 msgstr "XS"
 
-#: core/models.py:214
+#: core/models.py:215
 msgid "S"
 msgstr "S"
 
-#: core/models.py:215
+#: core/models.py:216
 msgid "M"
 msgstr "M"
 
-#: core/models.py:216
+#: core/models.py:217
 msgid "L"
 msgstr "L"
 
-#: core/models.py:217
+#: core/models.py:218
 msgid "XL"
 msgstr "XL"
 
-#: core/models.py:218
+#: core/models.py:219
 msgid "XXL"
 msgstr "XXL"
 
-#: core/models.py:219
+#: core/models.py:220
 msgid "XXXL"
 msgstr "XXXL"
 
-#: core/models.py:227
+#: core/models.py:228
 msgid "Student"
 msgstr "Étudiant"
 
-#: core/models.py:228
+#: core/models.py:229
 msgid "Administrative agent"
 msgstr "Personnel administratif"
 
-#: core/models.py:229
+#: core/models.py:230
 msgid "Teacher"
 msgstr "Enseignant"
 
-#: core/models.py:230
+#: core/models.py:231
 msgid "Agent"
 msgstr "Personnel"
 
-#: core/models.py:231
+#: core/models.py:232
 msgid "Doctor"
 msgstr "Doctorant"
 
-#: core/models.py:232
+#: core/models.py:233
 msgid "Former student"
 msgstr "Ancien étudiant"
 
-#: core/models.py:233
+#: core/models.py:234
 msgid "Service"
 msgstr "Service"
 
-#: core/models.py:239
+#: core/models.py:240
 msgid "department"
 msgstr "département"
 
-#: core/models.py:246
+#: core/models.py:247
 msgid "dpt option"
 msgstr "Filière"
 
@@ -2143,43 +2143,43 @@ msgstr "Filière"
 msgid "semester"
 msgstr "semestre"
 
-#: core/models.py:249
+#: core/models.py:250
 msgid "quote"
 msgstr "citation"
 
-#: core/models.py:250
+#: core/models.py:251
 msgid "school"
 msgstr "école"
 
-#: core/models.py:252
+#: core/models.py:253
 msgid "promo"
 msgstr "promo"
 
-#: core/models.py:255
+#: core/models.py:256
 msgid "forum signature"
 msgstr "signature du forum"
 
-#: core/models.py:257
+#: core/models.py:258
 msgid "second email address"
 msgstr "adresse email secondaire"
 
-#: core/models.py:259
+#: core/models.py:260
 msgid "parent phone"
 msgstr "téléphone des parents"
 
-#: core/models.py:262
+#: core/models.py:263
 msgid "parent address"
 msgstr "adresse des parents"
 
-#: core/models.py:265
+#: core/models.py:266
 msgid "is subscriber viewable"
 msgstr "profil visible par les cotisants"
 
-#: core/models.py:480
+#: core/models.py:481
 msgid "A user with that username already exists"
 msgstr "Un utilisateur de ce nom d'utilisateur existe déjà"
 
-#: core/models.py:618 core/templates/core/macros.jinja:72
+#: core/models.py:619 core/templates/core/macros.jinja:72
 #: core/templates/core/macros.jinja:74 core/templates/core/macros.jinja:75
 #: core/templates/core/user_detail.jinja:79
 #: core/templates/core/user_detail.jinja:80
@@ -2197,7 +2197,7 @@ msgstr "Un utilisateur de ce nom d'utilisateur existe déjà"
 msgid "Profile"
 msgstr "Profil"
 
-#: core/models.py:742
+#: core/models.py:743
 msgid "Visitor"
 msgstr "Visiteur"
 
@@ -2392,8 +2392,8 @@ msgstr "S'enregister"
 #: forum/templates/forum/macros.jinja:171
 #: forum/templates/forum/macros.jinja:175
 #: matmat/templates/matmat/search_form.jinja:37
-#: matmat/templates/matmat/search_form.jinja:47
-#: matmat/templates/matmat/search_form.jinja:58
+#: matmat/templates/matmat/search_form.jinja:46
+#: matmat/templates/matmat/search_form.jinja:56
 #: pedagogy/templates/pedagogy/guide.jinja:29
 msgid "Search"
 msgstr "Recherche"
@@ -4809,17 +4809,9 @@ msgstr "Recherche par profil"
 msgid "Inverted search"
 msgstr "Recherche inversée"
 
-#: matmat/templates/matmat/search_form.jinja:50
+#: matmat/templates/matmat/search_form.jinja:49
 msgid "Quick search"
 msgstr "Recherche rapide"
-
-#: matmat/views.py:76
-msgid "Indifferent"
-msgstr "Indifferent"
-
-#: matmat/views.py:80
-msgid "Sex"
-msgstr "Sexe"
 
 #: matmat/views.py:83
 msgid "Last/First name or nickname"
@@ -6137,15 +6129,3 @@ msgstr "Vous ne pouvez plus écrire de commentaires, la date est passée."
 #, python-format
 msgid "Maximum characters: %(max_length)s"
 msgstr "Nombre de caractères max: %(max_length)s"
-
-#~ msgid "ENERGIE"
-#~ msgstr "ENERGIE"
-
-#~ msgid "HUMA"
-#~ msgstr "HUMA"
-
-#~ msgid "Former website"
-#~ msgstr "Ancien site"
-
-#~ msgid "Help on the syntax"
-#~ msgstr "Aide sur la syntaxe"
