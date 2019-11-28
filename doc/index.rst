@@ -47,6 +47,7 @@ Bienvenue sur la documentation du Sith de l'AE
 
     frequent/subscriptions
     frequent/weekmail
+    frequent/promo_logo
 
 .. toctree::
     :maxdepth: 3
